@@ -1,0 +1,386 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FreshFold — Order FF-1042</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles/tokens.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: var(--color-surface-container-low);
+      }
+
+      body {
+        min-height: 100svh;
+        margin: 0;
+        background: var(--color-surface-container-low);
+      }
+
+      .phone {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 360px;
+        min-height: 100svh;
+        margin: 0 auto;
+        padding-bottom: env(safe-area-inset-bottom);
+        background: var(--color-background);
+      }
+
+      .app-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 18px 16px 14px;
+        border-bottom: 1px solid var(--color-outline-variant);
+      }
+
+      .brand-name {
+        margin: 0;
+        color: var(--color-primary);
+      }
+
+      .order-number {
+        padding: 5px 8px;
+        color: var(--color-on-surface-variant);
+        background: var(--color-surface-container-low);
+        border: 1px solid var(--color-outline-variant);
+        border-radius: 999px;
+      }
+
+      .status-card {
+        margin: 16px 16px 0;
+        padding: 20px;
+        color: var(--color-on-success);
+        background: var(--color-success);
+        border-radius: 16px;
+      }
+
+      .status-title {
+        margin: 0;
+      }
+
+      .delivery-time {
+        margin: 4px 0 0;
+      }
+
+      .balance-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin: 12px 16px 0;
+        padding: 16px 18px;
+        background: var(--color-surface-container-lowest);
+        border: 1px solid var(--color-outline-variant);
+        border-radius: 16px;
+        box-shadow: var(--shadow-soft);
+      }
+
+      .balance-label {
+        display: block;
+        margin: 0 0 2px;
+        color: var(--color-on-surface-variant);
+      }
+
+      .balance-amount {
+        display: block;
+        margin: 0;
+        color: var(--color-on-surface);
+      }
+
+      .items-card {
+        margin: 12px 16px 0;
+        padding: 16px 17px 8px;
+        background: var(--color-surface-container-lowest);
+        border: 1px solid var(--color-outline-variant);
+        border-radius: 16px;
+      }
+
+      .section-heading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
+      }
+
+      .section-title {
+        margin: 0;
+        color: var(--color-on-surface);
+      }
+
+      .item-count {
+        display: inline-grid;
+        min-width: 22px;
+        height: 22px;
+        padding: 0 6px;
+        color: var(--color-on-primary-container);
+        background: var(--color-primary-container);
+        border-radius: 999px;
+        place-items: center;
+      }
+
+      .items-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .items-list li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 40px;
+        border-top: 1px solid var(--color-outline-variant);
+      }
+
+      .items-list li:first-child {
+        border-top: 0;
+      }
+
+      .item-qty {
+        display: inline-grid;
+        flex: 0 0 auto;
+        width: 24px;
+        height: 24px;
+        color: var(--color-on-primary-container);
+        background: var(--color-primary-container);
+        border-radius: 8px;
+        place-items: center;
+      }
+
+      .item-name {
+        min-width: 0;
+        color: var(--color-on-surface);
+      }
+
+      .plan-card {
+        margin: 12px 16px 0;
+        padding: 14px 16px;
+        background: var(--color-surface-container-low);
+        border: 1px solid var(--color-outline-variant);
+        border-radius: 14px;
+      }
+
+      .plan-label {
+        margin: 0 0 2px;
+        color: var(--color-secondary);
+      }
+
+      .plan-detail {
+        margin: 0;
+        color: var(--color-on-surface-variant);
+      }
+
+      .cta-bar {
+        margin-top: auto;
+        padding: 16px;
+        background: var(--color-background);
+        border-top: 1px solid var(--color-outline-variant);
+      }
+
+      .pay-button {
+        width: 100%;
+        min-height: 52px;
+        padding: 0 20px;
+        color: var(--color-on-primary);
+        background: var(--color-primary);
+        border: 0;
+        border-radius: 14px;
+        box-shadow: var(--shadow-medium);
+        cursor: pointer;
+        transition: transform 120ms ease, box-shadow 120ms ease;
+      }
+
+      .pay-button:active {
+        box-shadow: var(--shadow-soft);
+        transform: translateY(1px);
+      }
+
+      .pay-button:focus-visible {
+        outline: 3px solid var(--color-primary);
+        outline-offset: 3px;
+      }
+
+      .type-display-large {
+        font-family: var(--type-display-large-family);
+        font-size: var(--type-display-large-size);
+        font-weight: var(--type-display-large-weight);
+        line-height: var(--type-display-large-line-height);
+        letter-spacing: var(--type-display-large-letter-spacing);
+      }
+
+      .type-display-small {
+        font-family: var(--type-display-small-family);
+        font-size: var(--type-display-small-size);
+        font-weight: var(--type-display-small-weight);
+        line-height: var(--type-display-small-line-height);
+        letter-spacing: var(--type-display-small-letter-spacing);
+      }
+
+      .type-headline-large {
+        font-family: var(--type-headline-large-family);
+        font-size: var(--type-headline-large-size);
+        font-weight: var(--type-headline-large-weight);
+        line-height: var(--type-headline-large-line-height);
+        letter-spacing: var(--type-headline-large-letter-spacing);
+      }
+
+      .type-headline-medium {
+        font-family: var(--type-headline-medium-family);
+        font-size: var(--type-headline-medium-size);
+        font-weight: var(--type-headline-medium-weight);
+        line-height: var(--type-headline-medium-line-height);
+        letter-spacing: var(--type-headline-medium-letter-spacing);
+      }
+
+      .type-headline-small {
+        font-family: var(--type-headline-small-family);
+        font-size: var(--type-headline-small-size);
+        font-weight: var(--type-headline-small-weight);
+        line-height: var(--type-headline-small-line-height);
+        letter-spacing: var(--type-headline-small-letter-spacing);
+      }
+
+      .type-title-medium {
+        font-family: var(--type-title-medium-family);
+        font-size: var(--type-title-medium-size);
+        font-weight: var(--type-title-medium-weight);
+        line-height: var(--type-title-medium-line-height);
+        letter-spacing: var(--type-title-medium-letter-spacing);
+      }
+
+      .type-title-small {
+        font-family: var(--type-title-small-family);
+        font-size: var(--type-title-small-size);
+        font-weight: var(--type-title-small-weight);
+        line-height: var(--type-title-small-line-height);
+        letter-spacing: var(--type-title-small-letter-spacing);
+      }
+
+      .type-body-medium {
+        font-family: var(--type-body-medium-family);
+        font-size: var(--type-body-medium-size);
+        font-weight: var(--type-body-medium-weight);
+        line-height: var(--type-body-medium-line-height);
+        letter-spacing: var(--type-body-medium-letter-spacing);
+      }
+
+      .type-body-small {
+        font-family: var(--type-body-small-family);
+        font-size: var(--type-body-small-size);
+        font-weight: var(--type-body-small-weight);
+        line-height: var(--type-body-small-line-height);
+        letter-spacing: var(--type-body-small-letter-spacing);
+      }
+
+      .type-label-large {
+        font-family: var(--type-label-large-family);
+        font-size: var(--type-label-large-size);
+        font-weight: var(--type-label-large-weight);
+        line-height: var(--type-label-large-line-height);
+        letter-spacing: var(--type-label-large-letter-spacing);
+      }
+
+      .type-label-medium {
+        font-family: var(--type-label-medium-family);
+        font-size: var(--type-label-medium-size);
+        font-weight: var(--type-label-medium-weight);
+        line-height: var(--type-label-medium-line-height);
+        letter-spacing: var(--type-label-medium-letter-spacing);
+      }
+
+      .type-label-small {
+        font-family: var(--type-label-small-family);
+        font-size: var(--type-label-small-size);
+        font-weight: var(--type-label-small-weight);
+        line-height: var(--type-label-small-line-height);
+        letter-spacing: var(--type-label-small-letter-spacing);
+      }
+
+      @media (min-width: 400px) {
+        body {
+          padding: 24px 0;
+        }
+
+        .phone {
+          min-height: 780px;
+          overflow: hidden;
+          border: 1px solid var(--color-outline-variant);
+          border-radius: 28px;
+          box-shadow: var(--shadow-hard);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="phone">
+      <header class="app-header">
+        <span class="brand-name type-headline-small">FreshFold</span>
+        <span class="order-number type-label-medium">Order FF-1042</span>
+      </header>
+
+      <section class="status-card" aria-labelledby="status-title">
+        <h1 class="status-title type-headline-medium" id="status-title">Ready for delivery</h1>
+        <p class="delivery-time type-body-small">Delivery today, 4–6pm</p>
+      </section>
+
+      <section class="balance-card" aria-label="Balance due">
+        <div>
+          <span class="balance-label type-title-small">Balance due</span>
+          <strong class="balance-amount type-display-large">₦3,500</strong>
+        </div>
+      </section>
+
+      <section class="items-card" aria-labelledby="items-title">
+        <div class="section-heading">
+          <h2 class="section-title type-headline-small" id="items-title">Items collected</h2>
+          <span class="item-count type-label-small" aria-label="7 items">7</span>
+        </div>
+        <ul class="items-list">
+          <li>
+            <span class="item-qty type-label-small">2</span>
+            <span class="item-name type-title-medium">Shirts</span>
+          </li>
+          <li>
+            <span class="item-qty type-label-small">2</span>
+            <span class="item-name type-title-medium">Trousers</span>
+          </li>
+          <li>
+            <span class="item-qty type-label-small">1</span>
+            <span class="item-name type-title-medium">Bedsheet</span>
+          </li>
+          <li>
+            <span class="item-qty type-label-small">1</span>
+            <span class="item-name type-title-medium">Native attire (agbada)</span>
+          </li>
+          <li>
+            <span class="item-qty type-label-small">1</span>
+            <span class="item-name type-title-medium">Towel</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="plan-card" aria-label="Monthly plan">
+        <p class="plan-label type-title-small">Monthly plan</p>
+        <p class="plan-detail type-display-small">12 items left</p>
+        <p class="plan-detail type-body-medium">Expires 31 Oct</p>
+      </section>
+
+      <div class="cta-bar">
+        <button class="pay-button type-label-large" type="button">Pay balance</button>
+      </div>
+    </main>
+  </body>
+</html>

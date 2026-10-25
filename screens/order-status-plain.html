@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f7f4" />
+    <title>FreshFold — Order FF-1042</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --ink: #102a25;
+        --muted: #60736d;
+        --quiet: #87958f;
+        --canvas: #f4f7f4;
+        --card: #ffffff;
+        --line: #e5ebe6;
+        --brand: #126b49;
+        --brand-dark: #0b5137;
+        --mint: #e1f3e8;
+        --mint-deep: #cfe9db;
+        --amber: #9b6717;
+        --amber-soft: #fbf3e5;
+        --amber-line: #eee0c8;
+      }
+
+      html {
+        background: #dfe7e2;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: #dfe7e2;
+        font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .phone {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 360px;
+        min-height: 100svh;
+        margin: 0 auto;
+        padding-bottom: env(safe-area-inset-bottom);
+        background:
+          radial-gradient(circle at 105% 2%, rgba(207, 233, 219, 0.75), transparent 31%),
+          var(--canvas);
+      }
+
+      .app-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 20px 18px 16px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        min-width: 0;
+      }
+
+      .brand-mark {
+        display: grid;
+        flex: 0 0 auto;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        color: #ffffff;
+        background: var(--brand);
+        border-radius: 11px;
+        box-shadow: 0 5px 12px rgba(18, 107, 73, 0.18);
+      }
+
+      .brand-mark svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      .brand-name {
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: -0.045em;
+      }
+
+      .order-number {
+        flex: 0 0 auto;
+        padding: 6px 9px;
+        color: var(--muted);
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.035em;
+        white-space: nowrap;
+        background: rgba(255, 255, 255, 0.74);
+        border: 1px solid rgba(16, 42, 37, 0.08);
+        border-radius: 999px;
+      }
+
+      .status-card {
+        position: relative;
+        margin: 0 16px;
+        padding: 20px;
+        overflow: hidden;
+        background: linear-gradient(145deg, #e7f7ed 0%, var(--mint-deep) 100%);
+        border: 1px solid #c2e1d1;
+        border-radius: 24px;
+      }
+
+      .status-card::after {
+        position: absolute;
+        top: -42px;
+        right: -32px;
+        width: 132px;
+        height: 132px;
+        content: "";
+        border: 22px solid rgba(255, 255, 255, 0.33);
+        border-radius: 50%;
+      }
+
+      .status-content {
+        position: relative;
+        z-index: 1;
+      }
+
+      .status-icon {
+        display: grid;
+        width: 46px;
+        height: 46px;
+        margin-bottom: 17px;
+        color: #ffffff;
+        background: var(--brand);
+        border-radius: 50%;
+        box-shadow: 0 7px 16px rgba(18, 107, 73, 0.2);
+        place-items: center;
+      }
+
+      .status-icon svg {
+        width: 23px;
+        height: 23px;
+      }
+
+      .status-title {
+        max-width: 250px;
+        margin: 0;
+        font-size: 28px;
+        font-weight: 800;
+        line-height: 1.08;
+        letter-spacing: -0.045em;
+      }
+
+      .delivery-time {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin: 10px 0 0;
+        color: #2c5848;
+        font-size: 13.5px;
+        font-weight: 600;
+      }
+
+      .delivery-time svg {
+        flex: 0 0 auto;
+        width: 16px;
+        height: 16px;
+      }
+
+      .balance-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin: 12px 16px 0;
+        padding: 17px 18px;
+        overflow: hidden;
+        color: #ffffff;
+        background:
+          radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.13), transparent 42%),
+          var(--brand-dark);
+        border-radius: 20px;
+        box-shadow: 0 9px 20px rgba(11, 81, 55, 0.14);
+      }
+
+      .balance-copy {
+        min-width: 0;
+      }
+
+      .balance-label {
+        display: block;
+        margin-bottom: 2px;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 11.5px;
+        font-weight: 600;
+      }
+
+      .balance-amount {
+        display: block;
+        font-size: 30px;
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -0.04em;
+      }
+
+      .balance-mark {
+        display: grid;
+        flex: 0 0 auto;
+        width: 46px;
+        height: 46px;
+        color: #eaf8f0;
+        font-size: 22px;
+        font-weight: 700;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        border-radius: 15px;
+        place-items: center;
+      }
+
+      .items-card {
+        margin: 12px 16px 0;
+        padding: 16px 17px 8px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        box-shadow: 0 4px 14px rgba(16, 42, 37, 0.035);
+      }
+
+      .section-heading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+
+      .section-heading h2 {
+        margin: 0;
+        font-size: 14.5px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .item-count {
+        display: inline-grid;
+        min-width: 21px;
+        height: 21px;
+        padding: 0 6px;
+        color: var(--brand);
+        font-size: 10.5px;
+        font-weight: 800;
+        background: var(--mint);
+        border-radius: 999px;
+        place-items: center;
+      }
+
+      .items-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .items-list li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 39px;
+        border-top: 1px solid #eff3f0;
+      }
+
+      .items-list li:first-child {
+        border-top: 0;
+      }
+
+      .item-qty {
+        display: inline-grid;
+        flex: 0 0 auto;
+        width: 23px;
+        height: 23px;
+        color: var(--brand);
+        font-size: 11px;
+        font-weight: 800;
+        background: #f0f6f2;
+        border-radius: 8px;
+        place-items: center;
+      }
+
+      .item-name {
+        min-width: 0;
+        color: #31453f;
+        font-size: 13.5px;
+        font-weight: 550;
+      }
+
+      .plan-card {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        margin: 12px 16px 0;
+        padding: 13px 15px;
+        background: var(--amber-soft);
+        border: 1px solid var(--amber-line);
+        border-radius: 18px;
+      }
+
+      .plan-icon {
+        display: grid;
+        flex: 0 0 auto;
+        width: 36px;
+        height: 36px;
+        color: var(--amber);
+        background: #fffaf1;
+        border: 1px solid #f3e6d2;
+        border-radius: 11px;
+        place-items: center;
+      }
+
+      .plan-icon svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .plan-copy {
+        min-width: 0;
+      }
+
+      .plan-label {
+        margin: 0 0 2px;
+        color: #8a6a35;
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.055em;
+        text-transform: uppercase;
+      }
+
+      .plan-detail {
+        margin: 0;
+        color: #57452b;
+        font-size: 12.5px;
+        line-height: 1.35;
+      }
+
+      .plan-detail strong {
+        font-weight: 800;
+      }
+
+      .cta-bar {
+        margin-top: auto;
+        padding: 16px 16px calc(18px + env(safe-area-inset-bottom));
+      }
+
+      .pay-button {
+        width: 100%;
+        min-height: 54px;
+        padding: 0 20px;
+        color: #ffffff;
+        font: inherit;
+        font-size: 15.5px;
+        font-weight: 750;
+        letter-spacing: -0.01em;
+        background: var(--brand);
+        border: 0;
+        border-radius: 16px;
+        box-shadow: 0 10px 22px rgba(18, 107, 73, 0.2);
+        cursor: pointer;
+        transition: transform 120ms ease, background 120ms ease, box-shadow 120ms ease;
+      }
+
+      .pay-button:hover {
+        background: #0f704b;
+      }
+
+      .pay-button:active {
+        background: var(--brand-dark);
+        box-shadow: 0 6px 14px rgba(18, 107, 73, 0.18);
+        transform: translateY(1px);
+      }
+
+      .pay-button:focus-visible {
+        outline: 3px solid rgba(18, 107, 73, 0.28);
+        outline-offset: 3px;
+      }
+
+      @media (min-width: 400px) {
+        body {
+          padding: 24px 0;
+        }
+
+        .phone {
+          min-height: 780px;
+          overflow: hidden;
+          border-radius: 30px;
+          box-shadow: 0 24px 60px rgba(16, 42, 37, 0.18);
+        }
+      }
+
+      @media (max-height: 700px) {
+        .status-icon {
+          margin-bottom: 13px;
+        }
+
+        .status-title {
+          font-size: 26px;
+        }
+
+        .status-card {
+          padding: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="phone">
+      <header class="app-header">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 8.5 12 5l7 3.5v7L12 19l-7-3.5v-7Z" />
+              <path d="M5 8.5 12 12l7-3.5M12 12v7" />
+            </svg>
+          </span>
+          <span class="brand-name">FreshFold</span>
+        </div>
+        <span class="order-number">Order FF-1042</span>
+      </header>
+
+      <section class="status-card" aria-labelledby="status-title">
+        <div class="status-content">
+          <span class="status-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6.5 12.5 3.5 3.5 7.5-8" />
+            </svg>
+          </span>
+          <h1 class="status-title" id="status-title">Ready for delivery</h1>
+          <p class="delivery-time">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="8.5" />
+              <path d="M12 7.5V12l3 1.8" />
+            </svg>
+            Delivery today, 4–6pm
+          </p>
+        </div>
+      </section>
+
+      <section class="balance-card" aria-label="Balance due">
+        <div class="balance-copy">
+          <span class="balance-label">Balance due</span>
+          <strong class="balance-amount">₦3,500</strong>
+        </div>
+        <span class="balance-mark" aria-hidden="true">₦</span>
+      </section>
+
+      <section class="items-card" aria-labelledby="items-title">
+        <div class="section-heading">
+          <h2 id="items-title">Items collected</h2>
+          <span class="item-count" aria-label="7 items">7</span>
+        </div>
+        <ul class="items-list">
+          <li>
+            <span class="item-qty" aria-hidden="true">2</span>
+            <span class="item-name">Shirts</span>
+          </li>
+          <li>
+            <span class="item-qty" aria-hidden="true">2</span>
+            <span class="item-name">Trousers</span>
+          </li>
+          <li>
+            <span class="item-qty" aria-hidden="true">1</span>
+            <span class="item-name">Bedsheet</span>
+          </li>
+          <li>
+            <span class="item-qty" aria-hidden="true">1</span>
+            <span class="item-name">Native attire (agbada)</span>
+          </li>
+          <li>
+            <span class="item-qty" aria-hidden="true">1</span>
+            <span class="item-name">Towel</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="plan-card" aria-label="Monthly plan">
+        <span class="plan-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="5.5" width="16" height="14" rx="2.5" />
+            <path d="M8 3.5v4M16 3.5v4M4 10h16" />
+          </svg>
+        </span>
+        <div class="plan-copy">
+          <p class="plan-label">Monthly plan</p>
+          <p class="plan-detail"><strong>12 items left</strong>, expires 31 Oct</p>
+        </div>
+      </section>
+
+      <div class="cta-bar">
+        <button class="pay-button" type="button">Pay balance</button>
+      </div>
+    </main>
+  </body>
+</html>
