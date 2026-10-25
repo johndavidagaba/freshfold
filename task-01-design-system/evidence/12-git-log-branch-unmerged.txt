@@ -1,0 +1,20 @@
+Task 1, step 8: proof the regression branch was never merged
+Run in C:\Project\freshfold (Windows PowerShell), 25 Oct 2026.
+Only the "##" heading lines below were added afterwards to label each section; the output itself is exactly as git wrote it.
+
+## 1. While still on the branch: git log --oneline --all --graph
+* e393684 Experiment: hard-code Pay balance colour and change brand colour (not for merging)
+* f87692b Build order status screen with design system; fix balance type style and plan card layout
+* 2e29533 Add tokens-to-css script and generated CSS variables from Figma tokens
+* ec1718b Add Task 1 design system: brief, colour roles, type scale, shadows and token exports
+
+## 2. After git checkout master: git branch -D break-token-referencing
+Deleted branch break-token-referencing (was e393684).
+
+## 3. Then: git log --oneline (master)
+f87692b Build order status screen with design system; fix balance type style and plan card layout
+2e29533 Add tokens-to-css script and generated CSS variables from Figma tokens
+ec1718b Add Task 1 design system: brief, colour roles, type scale, shadows and token exports
+
+## What this shows
+The experiment commit e393684 existed on break-token-referencing. Master's history ends at f87692b and never contains e393684. The branch was deleted with -D (force), which git requires precisely because the branch had commits that were never merged.

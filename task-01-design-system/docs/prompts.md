@@ -64,3 +64,90 @@ After I approve: write the script, run it with "node scripts/tokens-to-css.mjs",
 - Searched the script for hex colour codes (`#` followed by 6 hex digits): 0 matches.
 - Ran the script and checked the output against Figma: `--color-primary: #2b4fb4`, `--color-on-primary: #ffffff`, `--color-primary-container: #dce1ff`, `--color-success: #1b6e2a`, `--color-warning: #8a5300`, Display Large 48px / 67px / -0.5px, `--shadow-soft: 0px 1px 3px 0px #2b4fb41f` (1f = 12% opacity).
 - Defect found: the script checks that sizes, line heights and colours are valid, but not the font weight. If a weight were missing, the CSS would quietly contain `undefined`, which contradicts the agent's claim that missing values make the script fail.
+
+## Prompt 2: the screen without the design system (step 7)
+
+Agent: OpenCode, DeepSeek V4.1 Flash Free (high), 25 Oct 2026. Took about 1 minute.
+
+```
+Build one static screen for FreshFold Laundry, a laundry pickup-and-delivery service in Yaba, Lagos: the customer's Order Status screen, designed for a 360px-wide Android phone.
+
+Content:
+- Header: "FreshFold" and the order number "Order FF-1042"
+- Status: "Ready for delivery", with "Delivery today, 4–6pm"
+- Balance due: "₦3,500"
+- Items collected (7): 2 shirts, 2 trousers, 1 bedsheet, 1 native attire (agbada), 1 towel
+- Plan: "Monthly plan: 12 items left, expires 31 Oct"
+- One main button: "Pay balance"
+
+Create it as screens/order-status-plain.html with the CSS inside the file.
+
+For this version, do NOT open or use styles/tokens.css, the tokens folder, or anything in task-01-design-system. Style it however you think looks best, using your own choices. I need this as a "before" version to compare against later.
+
+Tell me which file you created when done.
+```
+
+What happened: it invented a green theme with gradients and a decorative circle. 48 lines of raw colour values (evidence/07-raw-value-search.txt).
+
+## Prompt 3: the same screen with the design system (step 7)
+
+Agent: OpenCode, DeepSeek V4.1 Flash Free (high). Took 5 min 43 s.
+
+```
+Now build the same Order Status screen again, with the same content, as screens/order-status.html. This time it must use the FreshFold design system and nothing else for styling.
+
+Rules:
+1. Link ../styles/tokens.css. Load the font "Atkinson Hyperlegible Next" from Google Fonts (weights 400, 500, 600).
+2. Every colour must be var(--color-...) from tokens.css. No hex, rgb, hsl or named colours anywhere in the file, not even white or black.
+3. Every piece of text must use one of the 15 type styles: font-family, font-size, font-weight, line-height and letter-spacing all from the matching --type-<role>-<size>-... variables. No raw font sizes.
+4. Shadows only from --shadow-soft, --shadow-medium or --shadow-hard.
+5. No gradients and no decorative shapes: the brief says calm, clean, quick to scan.
+6. The "Pay balance" button uses --color-primary with --color-on-primary text. The "Ready for delivery" status uses --color-success and --color-on-success.
+7. Spacing and corner radius can use px for now, because the design system has no spacing tokens yet.
+
+When done, tell me the file you created. Do not change tokens.css or the plain version.
+```
+
+What happened: it ran its own checks (21 text elements on type styles, 4 shadows from tokens). My own search found 0 raw colour values. But the balance looked too small.
+
+## Prompt 4: asking which type style it used (step 7.2)
+
+```
+Which typography style did you use for the balance amount "₦3,500" in screens/order-status.html? Quote the exact CSS lines for that element, including every --type- variable it uses, and tell me the font size it renders at.
+```
+
+What happened: it admitted Headline Medium (28px). My type-scale.md assigns Display Large (48px) to the balance (evidence/08-agent-typography-answer.txt).
+
+## Prompt 5: fixing the style mapping
+
+```
+That is the wrong style. In task-01-design-system/docs/type-scale.md the "Used in FreshFold for" column says the home-screen balance uses Display Large. Read that file and fix screens/order-status.html so every text element uses the style that type-scale.md assigns to that job. List each element, the style it had, and the style it has now. Change nothing else.
+```
+
+What happened: 3 min 26 s. Item names moved to Title Medium, "Monthly plan" to Title Small, "12 items left" to Display Small, the balance to Display Large. This created a new problem: "12 items left" (36px) and ", expires 31 Oct" (13px) shared one line.
+
+## Prompt 6: fixing the plan card
+
+```
+In screens/order-status.html, the plan card puts "12 items left" (Display Small, 36px) and ", expires 31 Oct" (Body Small, 13px) on the same line. The size jump looks awkward and the expiry date is easy to miss.
+
+Fix: put "12 items left" on its own line, and put "Expires 31 Oct" on the line below it (capital E, no comma), using Body Medium. Keep using only design-system variables. Change nothing else, and tell me exactly which lines you changed.
+```
+
+What happened: 1 min 41 s. Changed only line 377 into two lines.
+
+## Prompt 7: the deliberate regression (step 8)
+
+Run on the branch break-token-referencing.
+
+```
+This is a deliberate experiment on a throwaway branch. Do exactly these two things and nothing else:
+
+1. In screens/order-status.html, change ONLY the "Pay balance" button's background so it uses the raw hex value #2b4fb4 instead of var(--color-primary). Leave every other use of var(--color-primary) (including the FreshFold logo text) unchanged.
+
+2. In tokens/tokens.json, change the value of color > material-theme > sys > light > primary from "#2b4fb4ff" to "#00696dff" (simulating a brand colour change made in Figma). Then run: node scripts/tokens-to-css.mjs
+
+Do not commit. Tell me the exact lines you changed in both files.
+```
+
+What happened: 1 min 16 s. Changed line 198 of the screen and line 33 of tokens.json only. The logo turned teal; the button stayed blue (docs/regression.md).

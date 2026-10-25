@@ -1,0 +1,70 @@
+Task 1, step 7.1: search the codebase for raw colour values
+Machine: C:\Project\freshfold (Windows PowerShell), 25 Oct 2026
+Pattern matches hex codes (#abc to #aabbccdd), rgb()/rgba() and hsl()/hsla().
+
+=== 1. Screen built WITH the design system ===
+
+PS C:\Project\freshfold> Select-String -Path screens\order-status.html -Pattern '#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\('
+PS C:\Project\freshfold>
+
+Result: no output. 0 raw colour values in screens/order-status.html.
+
+=== 2. Control: same search on the screen built WITHOUT the design system ===
+(Proves the search works, so the empty result above is real, not a broken command.)
+
+PS C:\Project\freshfold> Select-String -Path screens\order-status-plain.html -Pattern '#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\('
+
+screens\order-status-plain.html:6:    <meta name="theme-color" content="#f4f7f4" />
+screens\order-status-plain.html:14:        --ink: #102a25;
+screens\order-status-plain.html:15:        --muted: #60736d;
+screens\order-status-plain.html:16:        --quiet: #87958f;
+screens\order-status-plain.html:17:        --canvas: #f4f7f4;
+screens\order-status-plain.html:18:        --card: #ffffff;
+screens\order-status-plain.html:19:        --line: #e5ebe6;
+screens\order-status-plain.html:20:        --brand: #126b49;
+screens\order-status-plain.html:21:        --brand-dark: #0b5137;
+screens\order-status-plain.html:22:        --mint: #e1f3e8;
+screens\order-status-plain.html:23:        --mint-deep: #cfe9db;
+screens\order-status-plain.html:24:        --amber: #9b6717;
+screens\order-status-plain.html:25:        --amber-soft: #fbf3e5;
+screens\order-status-plain.html:26:        --amber-line: #eee0c8;
+screens\order-status-plain.html:30:        background: #dfe7e2;
+screens\order-status-plain.html:36:        background: #dfe7e2;
+screens\order-status-plain.html:50:          radial-gradient(circle at 105% 2%, rgba(207, 233, 219, 0.75), transparent 31%),
+screens\order-status-plain.html:75:        color: #ffffff;
+screens\order-status-plain.html:78:        box-shadow: 0 5px 12px rgba(18, 107, 73, 0.18);
+screens\order-status-plain.html:100:        background: rgba(255, 255, 255, 0.74);
+screens\order-status-plain.html:101:        border: 1px solid rgba(16, 42, 37, 0.08);
+screens\order-status-plain.html:110:        background: linear-gradient(145deg, #e7f7ed 0%, var(--mint-deep) 100%);
+screens\order-status-plain.html:111:        border: 1px solid #c2e1d1;
+screens\order-status-plain.html:122:        border: 22px solid rgba(255, 255, 255, 0.33);
+screens\order-status-plain.html:136:        color: #ffffff;
+screens\order-status-plain.html:139:        box-shadow: 0 7px 16px rgba(18, 107, 73, 0.2);
+screens\order-status-plain.html:162:        color: #2c5848;
+screens\order-status-plain.html:181:        color: #ffffff;
+screens\order-status-plain.html:183:          radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.13), transparent 42%),
+screens\order-status-plain.html:186:        box-shadow: 0 9px 20px rgba(11, 81, 55, 0.14);
+screens\order-status-plain.html:196:        color: rgba(255, 255, 255, 0.7);
+screens\order-status-plain.html:214:        color: #eaf8f0;
+screens\order-status-plain.html:217:        background: rgba(255, 255, 255, 0.1);
+screens\order-status-plain.html:218:        border: 1px solid rgba(255, 255, 255, 0.13);
+screens\order-status-plain.html:229:        box-shadow: 0 4px 14px rgba(16, 42, 37, 0.035);
+screens\order-status-plain.html:270:        border-top: 1px solid #eff3f0;
+screens\order-status-plain.html:285:        background: #f0f6f2;
+screens\order-status-plain.html:292:        color: #31453f;
+screens\order-status-plain.html:314:        background: #fffaf1;
+screens\order-status-plain.html:315:        border: 1px solid #f3e6d2;
+screens\order-status-plain.html:331:        color: #8a6a35;
+screens\order-status-plain.html:340:        color: #57452b;
+screens\order-status-plain.html:358:        color: #ffffff;
+screens\order-status-plain.html:366:        box-shadow: 0 10px 22px rgba(18, 107, 73, 0.2);
+screens\order-status-plain.html:372:        background: #0f704b;
+screens\order-status-plain.html:377:        box-shadow: 0 6px 14px rgba(18, 107, 73, 0.18);
+screens\order-status-plain.html:382:        outline: 3px solid rgba(18, 107, 73, 0.28);
+screens\order-status-plain.html:395:          box-shadow: 0 24px 60px rgba(16, 42, 37, 0.18);
+
+PS C:\Project\freshfold>
+
+Result: 48 lines with raw colour values in the version built without the design system.
+
+Limit of this search: it does not catch named colours such as "white" or "black".

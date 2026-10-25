@@ -1,0 +1,21 @@
+Task 1, step 7.2: asking the agent which typography style it used
+Agent: OpenCode, DeepSeek V4.1 Flash Free (variant high), 25 Oct 2026. Answered in 23.6s.
+
+My question:
+Which typography style did you use for the balance amount "₦3,500" in screens/order-status.html? Quote the exact CSS lines for that element, including every --type- variable it uses, and tell me the font size it renders at.
+
+Agent's answer (copied from screenshot 08-agent-typography-answer.png):
+.type-headline-medium {
+  font-family: var(--type-headline-medium-family);
+  font-size: var(--type-headline-medium-size);
+  font-weight: var(--type-headline-medium-weight);
+  line-height: var(--type-headline-medium-line-height);
+  letter-spacing: var(--type-headline-medium-letter-spacing);
+}
+The element is <strong class="balance-amount type-headline-medium">₦3,500</strong>. It renders at 28px, from --type-headline-medium-size: 28px;.
+
+What this shows:
+- The agent did use the design system: every value comes from a --type- variable, none typed by hand.
+- But it picked the WRONG style. My type-scale.md says the balance on the home screen is Display Large (48px, -0.5px letter spacing). The agent used Headline Medium (28px).
+- My prompt only said "every piece of text must use one of the 15 type styles". It never said which style belongs to which job, so the agent guessed. Tokens stop raw values; they do not stop the wrong token being chosen.
+- The letter-spacing test I did on Display Large (03/04 screenshots) does not appear on this screen at all, because Display Large is not used.
