@@ -6,3 +6,13 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model PickupRequest {
+  id           String   @id @default(cuid())
+  customerName String
+  phone        String
+  address      String
+  pickupDate   DateTime
+  itemCount    Int
+  createdAt    DateTime @default(now())
+}

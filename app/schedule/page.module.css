@@ -1,0 +1,121 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100svh;
+  background-color: var(--color-surface);
+  align-items: center;
+  justify-content: flex-start;
+  padding: 24px 16px;
+}
+
+.card {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 16px;
+  padding: 24px 20px;
+  box-shadow: var(--shadow-soft);
+}
+
+.heading {
+  color: var(--color-on-surface);
+  margin: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  color: var(--color-on-surface-variant);
+}
+
+.input {
+  width: 100%;
+  padding: 12px 14px;
+  font-family: var(--type-body-large-family);
+  font-size: var(--type-body-large-size);
+  font-weight: var(--type-body-large-weight);
+  line-height: var(--type-body-large-line-height);
+  color: var(--color-on-surface);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-outline);
+  border-radius: 8px;
+  transition: border-color 150ms ease, outline 150ms ease;
+}
+
+.input:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+  border-color: var(--color-primary);
+}
+
+.button {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 20px;
+  margin-top: 8px;
+  color: var(--color-on-primary);
+  background-color: var(--color-primary);
+  border: none;
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 150ms ease, transform 150ms ease;
+}
+
+.button:hover {
+  box-shadow: var(--shadow-medium);
+}
+
+.button:active {
+  box-shadow: var(--shadow-soft);
+  transform: translateY(1px);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.successCard {
+  width: 100%;
+  padding: 16px;
+  background-color: var(--color-success);
+  color: var(--color-on-success);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.successTitle {
+  margin: 0;
+  color: var(--color-on-success);
+}
+
+.successText {
+  margin: 0;
+  color: var(--color-on-success);
+}

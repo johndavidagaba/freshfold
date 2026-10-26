@@ -1,0 +1,23 @@
+# Dev server log (node terminal), first form submission, Mon 26 Oct 2026 ~19:31 WAT
+# Form: David Test One / 08000000001 / 14 Commercial Ave, Yaba / 27/10/2026 19:31 / 7 items
+# UI showed: "Pickup scheduled! Your request has been recorded. Reference ID: cmvplfgws0000v8ncpysn0s4m"
+
+GET /schedule 200 in 796ms
+  Reload env: .env
+Γ£ô Compiled in 1017ms (947 modules)
+  Reload env: .env
+Γ£ô Compiled in 359ms (947 modules)
+Γ£ô Compiled in 2s (1004 modules)
+GET /schedule 200 in 256ms
+GET /schedule 200 in 23ms
+POST /schedule 200 in 1763ms
+
+# Status codes: GET 200 (page served), POST 200 (form submitted via Server Action).
+# There is no 201 anywhere. A Next.js Server Action posts back to the page URL and
+# always answers 200 when the action function returns, whether or not anything was saved.
+# So the status code alone does not prove a row was written; only the database can.
+
+# Second submission, ~19:37 WAT: David Test Two / 08000000002 / 3 Herbert Macaulay Way, Yaba / 30/10/2026 19:37 / 12 items
+# UI showed: "Pickup scheduled! ... Reference ID: cmvplnlkw0001v8nc5xpbfjgw"
+GET /schedule 200 in 29ms
+POST /schedule 200 in 1564ms

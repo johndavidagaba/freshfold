@@ -1,0 +1,49 @@
+# Dev server log, form submitted with the database connection deliberately broken
+# Mon 26 Oct 2026 ~19:49 WAT
+# How it was broken: in .env, renamed DATABASE_URL to DATABASE_URL_OFF, then restarted the dev server
+# Form: David Test Three / 08000000003 / 1 Tejuosho Road, Yaba / 29/10/2026 19:49 / 5 items
+# UI showed: small red line "Unable to save pickup request. Please try again." above the form; every field emptied.
+
+ GET /schedule 200 in 58ms
+prisma:error 
+Invalid `prisma.pickupRequest.create()` invocation:
+
+
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:7
+   |
+ 6 |   provider = "postgresql"
+ 7 |   url      = env("DATABASE_URL")
+   |
+
+Validation Error Count: 1
+Error creating pickup request: Error [PrismaClientInitializationError]:
+Invalid `prisma.pickupRequest.create()` invocation:
+
+
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:7
+   |
+ 6 |   provider = "postgresql"
+ 7 |   url      = env("DATABASE_URL")
+   |
+
+Validation Error Count: 1
+    at <unknown> (-->  schema.prisma:7)
+    at async schedulePickupAction (app\schedule\actions.ts:36:20) 
+  34 |
+  35 |   try {
+> 36 |     const request = await prisma.pickupRequest.create({    
+     |                    ^
+  37 |       data: {
+  38 |         customerName,
+  39 |         phone, {
+  clientVersion: '6.19.3',
+  errorCode: undefined,
+  retryable: undefined
+}
+ POST /schedule 200 in 797ms
+
+# The save failed (PrismaClientInitializationError), yet the request still ended "POST /schedule 200".
+# Successful saves earlier: POST /schedule 200 in 1763ms and 1564ms. A failed save: POST /schedule 200 in 797ms.
+# The status code is identical for success and failure.
