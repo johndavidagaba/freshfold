@@ -1,0 +1,18 @@
+Task 2, step 4: first page load
+Machine: C:\Project\freshfold, Windows PowerShell, 26 Oct 2026 about 16:40.
+Command: npm.cmd run dev 2>&1 | Tee-Object task-02-repository-and-scaffold\evidence\03-server-start.txt
+Browser: Chrome, http://localhost:3000
+
+Terminal output (transcribed from screenshot 04-first-load-and-reload.png; the odd characters are Next.js's
+status icons, mangled by PowerShell's text encoding):
+
+   Γû▓ Next.js 15.3.9
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.6:3000
+
+ Γ£ô Starting...
+ Γ£ô Ready in 10.8s
+ Γùï Compiling / ...
+ Γ£ô Compiled / in 9.5s (696 modules)
+ GET / 200 in 10341ms      <- first load, status 200 OK
+ GET / 200 in 137ms        <- reload (F5)
