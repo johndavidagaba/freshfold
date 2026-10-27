@@ -1,4 +1,18 @@
+import type { Metadata } from "next";
 import styles from "./page.module.css";
+
+export const metadata: Metadata = {
+  title: "Laundry pickup in Yaba · FreshFold",
+  description:
+    "FreshFold collects your laundry in Yaba, Lagos, records every item, and brings it back clean.",
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: "/",
+  },
+};
 
 export default function HomePage() {
   return (

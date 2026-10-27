@@ -3,8 +3,22 @@ import "@/styles/tokens.css";
 import "@/app/globals.css";
 
 export const metadata: Metadata = {
-  title: "FreshFold Laundry",
-  description: "Laundry pickup and delivery in Yaba, Lagos",
+  metadataBase: new URL("http://localhost:3000"),
+  title: {
+    default: "FreshFold · Laundry pickup in Yaba",
+    template: "%s · FreshFold",
+  },
+  description: "Every item counted, from pickup to your door.",
+  openGraph: {
+    title: "FreshFold · Laundry pickup in Yaba",
+    description: "Every item counted, from pickup to your door.",
+    type: "website",
+    siteName: "FreshFold",
+    locale: "en_NG",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({
