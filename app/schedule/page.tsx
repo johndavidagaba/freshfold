@@ -1,10 +1,18 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { schedulePickupAction, type ScheduleFormState } from "./actions";
 import styles from "./page.module.css";
 
 const initialState: ScheduleFormState = {};
+
+const WINDOWS = [
+  { id: "morning", label: "Morning (8–12)" },
+  { id: "afternoon", label: "Afternoon (12–4)" },
+  { id: "evening", label: "Evening (4–7)" },
+] as const;
 
 export default function SchedulePage() {
   const [state, formAction, isPending] = useActionState(
@@ -12,11 +20,40 @@ export default function SchedulePage() {
     initialState
   );
 
+  const [selectedWindow, setSelectedWindow] = useState<string>("");
+  const [windowError, setWindowError] = useState<string>("");
+
+  const handleWindowSelect = (windowId: string) => {
+    setSelectedWindow(windowId);
+    setWindowError("");
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    if (!selectedWindow) {
+      e.preventDefault();
+      setWindowError("Please choose a pickup window.");
+    }
+  };
+
   return (
     <main className={styles.container}>
+      <header className={styles.header}>
+        <Link href="/" className={styles.brandLink}>
+          <Image
+            src="/icon.png"
+            width={32}
+            height={32}
+            alt="FreshFold home"
+          />
+          <span className={`${styles.brandName} type-title-medium`}>
+            FreshFold
+          </span>
+        </Link>
+      </header>
+
       <section className={styles.card}>
-        <h1 className={`${styles.heading} type-headline-small`}>
-          Schedule a pickup
+        <h1 className={`${styles.heading} type-headline-large`}>
+          We count every item. Book your pickup.
         </h1>
 
         {state?.success ? (
@@ -29,7 +66,11 @@ export default function SchedulePage() {
             </p>
           </div>
         ) : (
-          <form action={formAction} className={styles.form}>
+          <form
+            action={formAction}
+            onSubmit={handleSubmit}
+            className={styles.form}
+          >
             {state?.error && (
               <p
                 className="type-body-small"
@@ -83,36 +124,53 @@ export default function SchedulePage() {
 
             <div className={styles.field}>
               <label htmlFor="pickupDate" className={`${styles.label} type-label-large`}>
-                Pickup Date &amp; Time
+                Pickup Date
               </label>
               <input
                 id="pickupDate"
                 name="pickupDate"
-                type="datetime-local"
+                type="date"
                 required
                 className={styles.input}
               />
             </div>
 
             <div className={styles.field}>
-              <label htmlFor="itemCount" className={`${styles.label} type-label-large`}>
-                Rough Item Count
-              </label>
+              <span className={`${styles.label} type-label-large`}>
+                Pickup Window
+              </span>
+              <div className={styles.windowButtonGroup}>
+                {WINDOWS.map((w) => (
+                  <button
+                    key={w.id}
+                    type="button"
+                    onClick={() => handleWindowSelect(w.id)}
+                    className={
+                      selectedWindow === w.id
+                        ? styles.windowButtonSelected
+                        : styles.windowButton
+                    }
+                  >
+                    {w.label}
+                  </button>
+                ))}
+              </div>
+              {windowError && (
+                <p className={`${styles.windowErrorMessage} type-body-small`}>
+                  {windowError}
+                </p>
+              )}
               <input
-                id="itemCount"
-                name="itemCount"
-                type="number"
-                min="1"
-                required
-                className={styles.input}
-                placeholder="e.g. 7"
+                type="hidden"
+                name="pickupWindow"
+                value={selectedWindow}
               />
             </div>
 
             <button
               type="submit"
               disabled={isPending}
-              className={`${styles.button} type-label-large`}
+              className={styles.button}
             >
               {isPending ? "Submitting..." : "Request pickup"}
             </button>

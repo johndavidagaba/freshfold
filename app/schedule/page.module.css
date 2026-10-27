@@ -6,7 +6,39 @@
   background-color: var(--color-surface);
   align-items: center;
   justify-content: flex-start;
-  padding: 24px 16px;
+  padding: 16px 16px 32px;
+}
+
+.header {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  align-items: center;
+  padding: 8px 0 16px;
+}
+
+.brandLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 150ms ease;
+}
+
+.brandLink:hover {
+  opacity: 0.8;
+}
+
+.brandLink:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.brandName {
+  color: var(--color-primary);
+  margin: 0;
 }
 
 .card {
@@ -25,6 +57,7 @@
 .heading {
   color: var(--color-on-surface);
   margin: 0;
+  max-width: 21ch;
 }
 
 .form {
@@ -63,24 +96,94 @@
   border-color: var(--color-primary);
 }
 
+.windowButtonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.windowButton {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-family: var(--type-label-large-family);
+  font-size: var(--type-label-large-size);
+  font-weight: var(--type-label-large-weight);
+  line-height: var(--type-label-large-line-height);
+  letter-spacing: var(--type-label-large-letter-spacing);
+  color: var(--color-on-surface);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-outline);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.windowButton:hover {
+  background-color: var(--color-surface-container);
+  border-color: var(--color-primary);
+}
+
+.windowButtonSelected {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-family: var(--type-label-large-family);
+  font-size: var(--type-label-large-size);
+  font-weight: var(--type-label-large-weight);
+  line-height: var(--type-label-large-line-height);
+  letter-spacing: var(--type-label-large-letter-spacing);
+  color: var(--color-on-primary-container);
+  background-color: var(--color-primary-container);
+  border: 1px solid var(--color-primary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.windowButtonSelected:hover {
+  background-color: var(--color-secondary-container);
+}
+
+.windowButton:focus-visible,
+.windowButtonSelected:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.windowErrorMessage {
+  color: var(--color-error);
+  margin: 4px 0 0;
+}
+
 .button {
-  width: 100%;
-  min-height: 48px;
-  padding: 12px 20px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-family: var(--type-label-large-family);
+  font-size: var(--type-label-large-size);
+  font-weight: var(--type-label-large-weight);
+  line-height: var(--type-label-large-line-height);
+  letter-spacing: var(--type-label-large-letter-spacing);
   margin-top: 8px;
   color: var(--color-on-primary);
   background-color: var(--color-primary);
   border: none;
-  border-radius: 12px;
   box-shadow: var(--shadow-soft);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: box-shadow 150ms ease, transform 150ms ease;
+  text-decoration: none;
+  align-self: flex-start;
+  transition: background-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
 }
 
 .button:hover {
+  background-color: var(--color-surface-tint);
   box-shadow: var(--shadow-medium);
 }
 

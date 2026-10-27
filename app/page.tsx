@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
@@ -22,12 +23,12 @@ export default function HomePage() {
         <p className={`${styles.description} type-body-large`}>
           Laundry pickup and delivery in Yaba, Lagos.
         </p>
-        <button
-          type="button"
+        <Link
+          href="/schedule"
           className={`${styles.button} type-label-large`}
         >
           Schedule pickup
-        </button>
+        </Link>
       </section>
     </main>
   );
