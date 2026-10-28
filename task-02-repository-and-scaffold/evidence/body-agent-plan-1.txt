@@ -1,0 +1,2 @@
+# Agent plan for body prompt 1 (Tue 27 Oct 2026 ~15:18 WAT), pasted from Antigravity
+(See chat transcript: plan proposed itemCount Int?, migration 'npx prisma migrate dev --name make_item_count_optional', date + 3 window buttons at 08:00/12:00/16:00 +01:00, header Link with next/image /icon.png 32px, type-headline-large heading with no max-width, buttons 0.75rem 1.5rem / radius 0.75rem with type-label-large, hover via surface-container/surface-tint/outline, home button as Link to /schedule. Its assumption 3 left open whether Morning is pre-selected; I chose: no default.)

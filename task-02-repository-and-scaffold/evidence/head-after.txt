@@ -1,0 +1,83 @@
+# Page head AFTER the agent's metadata change (Tue 27 Oct 2026 ~14:20 WAT)
+# Command: [...document.head.querySelectorAll('title,meta,link[rel*=icon],link[rel=canonical]')].map(e=>e.outerHTML).join('\n')
+
+## Route: /
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laundry pickup in Yaba</title>
+<meta name="description" content="FreshFold collects your laundry in Yaba, Lagos, records every item, and brings it back clean.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="http://localhost:3000">
+<meta property="og:title" content="FreshFold · Laundry pickup in Yaba">
+<meta property="og:description" content="Every item counted, from pickup to your door.">
+<meta property="og:site_name" content="FreshFold">
+<meta property="og:locale" content="en_NG">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FreshFold · Laundry pickup in Yaba">
+<meta name="twitter:description" content="Every item counted, from pickup to your door.">
+
+# Finding: the agent's plan promised the home title would read "Laundry pickup in Yaba · FreshFold".
+# It does not: the title template in app/layout.tsx only applies to pages in child folders,
+# not to app/page.tsx, which sits beside the layout. The brand name is missing from the home tab.
+
+## Route: /schedule
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schedule a pickup · FreshFold</title>
+<meta name="description" content="Every item counted, from pickup to your door.">
+<meta property="og:title" content="FreshFold · Laundry pickup in Yaba">
+<meta property="og:description" content="Every item counted, from pickup to your door.">
+<meta property="og:site_name" content="FreshFold">
+<meta property="og:locale" content="en_NG">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FreshFold · Laundry pickup in Yaba">
+<meta name="twitter:description" content="Every item counted, from pickup to your door.">
+
+# The title changes with navigation: "Laundry pickup in Yaba" on /, "Schedule a pickup · FreshFold" on /schedule.
+# No SEO tags (robots, canonical) on /schedule, as intended.
+# Second finding: og:title on /schedule still says "FreshFold · Laundry pickup in Yaba", so a shared
+# schedule link would preview as the home page.
+
+## Route: /schedule after the agent's second fix (~14:27 WAT)
+<title>Schedule a pickup · FreshFold</title>
+<meta name="description" content="Every item counted, from pickup to your door.">
+<meta property="og:title" content="Schedule a pickup · FreshFold">
+<meta property="og:description" content="Every item counted, from pickup to your door.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Schedule a pickup · FreshFold">
+<meta name="twitter:description" content="Every item counted, from pickup to your door.">
+
+# The agent assumed Next.js would keep og:site_name, og:locale and og:type when the page set its own openGraph.
+# It did not: a page's openGraph object replaces the layout's whole openGraph object.
+# og:site_name, og:locale and og:type disappeared from /schedule.
+
+## Route: /schedule FINAL (~14:32 WAT), after giving the full openGraph object
+<title>Schedule a pickup · FreshFold</title>
+<meta name="description" content="Every item counted, from pickup to your door.">
+<meta property="og:title" content="Schedule a pickup · FreshFold">
+<meta property="og:description" content="Every item counted, from pickup to your door.">
+<meta property="og:site_name" content="FreshFold">
+<meta property="og:locale" content="en_NG">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Schedule a pickup · FreshFold">
+<meta name="twitter:description" content="Every item counted, from pickup to your door.">
+
+## Route: / FINAL (~14:33 WAT)
+<title>Laundry pickup in Yaba · FreshFold</title>
+<meta name="description" content="FreshFold collects your laundry in Yaba, Lagos, records every item, and brings it back clean.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="http://localhost:3000">
+<meta property="og:title" content="FreshFold · Laundry pickup in Yaba">
+<meta property="og:description" content="Every item counted, from pickup to your door.">
+<meta property="og:site_name" content="FreshFold">
+<meta property="og:locale" content="en_NG">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FreshFold · Laundry pickup in Yaba">
+<meta name="twitter:description" content="Every item counted, from pickup to your door.">
+
+# Still to do: favicon (app/icon.png, made by me) and the Open Graph image (app/opengraph-image.png).
+# Known limit: canonical and og URLs point at localhost:3000 until the app is deployed.
