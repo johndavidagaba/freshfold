@@ -107,11 +107,6 @@
 .windowButton {
   padding: 0.75rem 1.5rem;
   border-radius: 0.75rem;
-  font-family: var(--type-label-large-family);
-  font-size: var(--type-label-large-size);
-  font-weight: var(--type-label-large-weight);
-  line-height: var(--type-label-large-line-height);
-  letter-spacing: var(--type-label-large-letter-spacing);
   color: var(--color-on-surface);
   background-color: var(--color-surface);
   border: 1px solid var(--color-outline);
@@ -131,11 +126,6 @@
 .windowButtonSelected {
   padding: 0.75rem 1.5rem;
   border-radius: 0.75rem;
-  font-family: var(--type-label-large-family);
-  font-size: var(--type-label-large-size);
-  font-weight: var(--type-label-large-weight);
-  line-height: var(--type-label-large-line-height);
-  letter-spacing: var(--type-label-large-letter-spacing);
   color: var(--color-on-primary-container);
   background-color: var(--color-primary-container);
   border: 1px solid var(--color-primary);
@@ -165,11 +155,6 @@
 .button {
   padding: 0.75rem 1.5rem;
   border-radius: 0.75rem;
-  font-family: var(--type-label-large-family);
-  font-size: var(--type-label-large-size);
-  font-weight: var(--type-label-large-weight);
-  line-height: var(--type-label-large-line-height);
-  letter-spacing: var(--type-label-large-letter-spacing);
   margin-top: 8px;
   color: var(--color-on-primary);
   background-color: var(--color-primary);

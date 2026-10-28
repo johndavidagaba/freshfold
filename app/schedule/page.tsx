@@ -145,11 +145,11 @@ export default function SchedulePage() {
                     key={w.id}
                     type="button"
                     onClick={() => handleWindowSelect(w.id)}
-                    className={
+                    className={`${
                       selectedWindow === w.id
                         ? styles.windowButtonSelected
                         : styles.windowButton
-                    }
+                    } type-label-large`}
                   >
                     {w.label}
                   </button>
@@ -170,7 +170,7 @@ export default function SchedulePage() {
             <button
               type="submit"
               disabled={isPending}
-              className={styles.button}
+              className={`${styles.button} type-label-large`}
             >
               {isPending ? "Submitting..." : "Request pickup"}
             </button>
