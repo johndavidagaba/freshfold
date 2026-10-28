@@ -8,6 +8,12 @@ export type ScheduleFormState = {
   requestId?: string;
 };
 
+const WINDOW_START_TIMES: Record<string, string> = {
+  morning: "08:00:00",
+  afternoon: "12:00:00",
+  evening: "16:00:00",
+};
+
 export async function schedulePickupAction(
   _prevState: ScheduleFormState,
   formData: FormData
@@ -16,20 +22,23 @@ export async function schedulePickupAction(
   const phone = formData.get("phone")?.toString().trim();
   const address = formData.get("address")?.toString().trim();
   const pickupDateStr = formData.get("pickupDate")?.toString().trim();
-  const itemCountStr = formData.get("itemCount")?.toString().trim();
+  const pickupWindow = formData.get("pickupWindow")?.toString().trim();
 
-  if (!customerName || !phone || !address || !pickupDateStr || !itemCountStr) {
-    return { error: "Please fill in all fields." };
+  if (!customerName || !phone || !address || !pickupDateStr) {
+    return { error: "Please fill in all required fields." };
   }
 
-  const itemCount = parseInt(itemCountStr, 10);
-  if (isNaN(itemCount) || itemCount <= 0) {
-    return { error: "Item count must be a positive number." };
+  if (!pickupWindow || !WINDOW_START_TIMES[pickupWindow]) {
+    return { error: "Please choose a pickup window." };
   }
 
-  const pickupDate = new Date(pickupDateStr);
+  const startTime = WINDOW_START_TIMES[pickupWindow];
+  // Lagos is in West Africa Time (WAT), which is UTC+1 with no daylight saving time
+  const isoString = `${pickupDateStr}T${startTime}+01:00`;
+  const pickupDate = new Date(isoString);
+
   if (isNaN(pickupDate.getTime())) {
-    return { error: "Please enter a valid date and time." };
+    return { error: "Please enter a valid date." };
   }
 
   try {
@@ -39,7 +48,6 @@ export async function schedulePickupAction(
         phone,
         address,
         pickupDate,
-        itemCount,
       },
     });
 

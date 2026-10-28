@@ -13,6 +13,6 @@ model PickupRequest {
   phone        String
   address      String
   pickupDate   DateTime
-  itemCount    Int
+  itemCount    Int?
   createdAt    DateTime @default(now())
 }

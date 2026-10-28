@@ -33,24 +33,29 @@
 }
 
 .button {
-  width: 100%;
-  min-height: 48px;
-  padding: 12px 20px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-family: var(--type-label-large-family);
+  font-size: var(--type-label-large-size);
+  font-weight: var(--type-label-large-weight);
+  line-height: var(--type-label-large-line-height);
+  letter-spacing: var(--type-label-large-letter-spacing);
   margin-top: 8px;
   color: var(--color-on-primary);
   background-color: var(--color-primary);
   border: none;
-  border-radius: 12px;
   box-shadow: var(--shadow-soft);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  transition: box-shadow 150ms ease, transform 150ms ease;
+  align-self: flex-start;
+  transition: background-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
 }
 
 .button:hover {
+  background-color: var(--color-surface-tint);
   box-shadow: var(--shadow-medium);
 }
 
