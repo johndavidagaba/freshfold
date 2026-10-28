@@ -11,13 +11,14 @@ This is my Ship & Found Founder Track portfolio. It is **one repository with fiv
 | Part | State |
 | --- | --- |
 | Task 1: design system (`task-01-design-system/`) | **Finished.** Colours, 15 type styles and 3 shadows from Figma, converted to 131 CSS variables. |
-| Task 2: repository and scaffold (`task-02-repository-and-scaffold/`) | **Half done.** Scaffold, server failures, the database form and its evidence are finished. README test, working-tree drawing, branch history and page head are still to do. |
+| Task 2: repository and scaffold (`task-02-repository-and-scaffold/`) | **Nearly finished.** Scaffold, server failures, the database form, page head, information design, branches and pull requests are done. The README test with a real person and the hand-drawn working tree are still to do. |
 | Tasks 3–5 | **Not started.** |
 
 What runs today:
 
-- **Home page (`/`):** the FreshFold name, one line of description and a "Schedule pickup" button. **The button does nothing yet.**
-- **Schedule page (`/schedule`):** a form that saves a pickup request (name, phone, address, date and time, rough item count) to PostgreSQL. **It works.** Two test rows were saved and checked in the database (`task-02-repository-and-scaffold/evidence/12-database-rows.png`).
+- **Home page (`/`):** the FreshFold name, one line of description and a "Schedule pickup" button that opens the booking form.
+- **Schedule page (`/schedule`):** a form that saves a pickup request (name, phone, address, a date and a Morning, Afternoon or Evening window) to PostgreSQL. **It works.** Saved rows were checked in the database by matching their IDs to the on-screen reference (`task-02-repository-and-scaffold/evidence/12-database-rows.png`, `database-rows-after-redesign.png`).
+- **Page head:** titles change per page, and there is a favicon and a link-preview image I made in Figma.
 
 What does **not** exist yet: recording individual items at pickup (the one thing that must work), order status, customer accounts, staff screens and payments.
 
@@ -75,7 +76,7 @@ You need **Node.js 18.18 or newer**, **Git**, and a free **[Neon](https://neon.t
 ## 6. What this deliberately does not do
 
 - **No customer login.** The first job is proving that a request is really saved. Accounts and sessions come in Task 5.
-- **No payments.** Taking money before items are reliably recorded would charge people for a service the app cannot yet track.
+- **No payments yet.** Taking money before items are reliably recorded would charge people for a service the app cannot yet track. Payments (Flutterwave, test mode) are planned with the money tables in Task 4.
 - **No staff screens or item recording yet.** This is the core of the product, so it gets its own task rather than being rushed into the scaffold.
 - **No input validation beyond the browser's own.** Client-side validation is Task 3 and server-side security is Task 4. Doing them properly matters more than doing them early.
 - **No CSS framework or UI library.** The design system is the only source of styling (`AGENTS.md`).
@@ -86,8 +87,16 @@ You need **Node.js 18.18 or newer**, **Git**, and a free **[Neon](https://neon.t
 1. **A failed save returns HTTP 200.** `app/schedule/actions.ts` (the `try/catch` around `prisma.pickupRequest.create`, line 35 onwards) catches the database error and returns an error message, so the request ends `POST /schedule 200`, the same status as a successful save. Logs and the network tab cannot tell success from failure. Evidence: `task-02-repository-and-scaffold/evidence/13-write-failed-logs.txt`.
 2. **A failed save wipes the form.** In `app/schedule/page.tsx`, after a failed submit every field is emptied and the only feedback is one small red line. A customer must retype everything and can easily miss the message. Evidence: `13-write-failed-ui.png`.
 3. **A fixed database setting needs a restart.** `lib/prisma.ts` creates one Prisma client and keeps it. After `DATABASE_URL` was restored, the server reloaded `.env` but saves kept failing until a full restart.
-4. **The home page button goes nowhere.** `app/page.tsx`: "Schedule pickup" has no link to `/schedule` yet.
-5. **`lib/` is a top-level folder that `AGENTS.md` does not list.** The agent created it without asking, against the rules in `AGENTS.md`.
-6. **The token script does not check font weights.** `scripts/tokens-to-css.mjs`, line 84 validates sizes and colours but not weights, so a bad weight would pass silently.
-7. **Colour roles hold hex values instead of palette references.** In `styles/tokens.css`, `--color-primary` is `#2b4fb4`, not `var(--palette-primary-40)`, which makes dark mode and rebranding harder. See `task-01-design-system/docs/defects.md`.
-8. **No automated tests.** Every check so far has been manual, recorded in `evidence/`.
+4. **Preview links point to localhost.** `app/layout.tsx` sets `metadataBase` to `http://localhost:3000`, so a link shared today would preview with a localhost image URL. It must change on deployment.
+5. **The pickup time zone is fixed in code.** `app/schedule/actions.ts` builds window times as `+01:00`. That's fine for Lagos, which has no daylight saving, but wrong for anyone outside West Africa Time.
+6. **`lib/` is a top-level folder that `AGENTS.md` does not list.** The agent created it without asking, against the rules in `AGENTS.md`.
+7. **The token script does not check font weights.** `scripts/tokens-to-css.mjs`, line 84 validates sizes and colours but not weights, so a bad weight would pass silently.
+8. **Colour roles hold hex values instead of palette references.** In `styles/tokens.css`, `--color-primary` is `#2b4fb4`, not `var(--palette-primary-40)`, which makes dark mode and rebranding harder. See `task-01-design-system/docs/defects.md`.
+9. **No automated tests.** Every check so far has been manual, recorded in `evidence/`.
+
+The full Task 2 list is in `task-02-repository-and-scaffold/docs/defects.md`.
+
+## Pull requests
+
+- #1 Main README: https://github.com/johndavidagaba/freshfold/pull/1
+- #2 Page head and information design (Task 2, step 10): https://github.com/johndavidagaba/freshfold/pull/2
