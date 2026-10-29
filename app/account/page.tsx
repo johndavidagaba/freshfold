@@ -54,9 +54,6 @@ function AccountForms() {
             <h1 className={`${styles.heading} type-headline-large`}>
               Create your account
             </h1>
-            <p className={`${styles.intro} type-body-medium`}>
-              One account for pickups, balances and your monthly plan.
-            </p>
 
             <form className={styles.form}>
               <div className={styles.field}>
@@ -102,20 +99,6 @@ function AccountForms() {
               </div>
 
               <div className={styles.field}>
-                <label htmlFor="address" className={`${styles.label} type-label-large`}>
-                  Pickup Address
-                </label>
-                <input
-                  id="address"
-                  name="address"
-                  type="text"
-                  autoComplete="street-address"
-                  className={`${styles.input} type-body-large`}
-                  placeholder="e.g. 14 Commercial Ave, Yaba"
-                />
-              </div>
-
-              <div className={styles.field}>
                 <label htmlFor="password" className={`${styles.label} type-label-large`}>
                   Password
                 </label>
@@ -141,6 +124,27 @@ function AccountForms() {
                 />
               </div>
 
+              <div className={styles.checkboxRow}>
+                <input
+                  id="terms"
+                  name="terms"
+                  type="checkbox"
+                  required
+                  className={styles.checkbox}
+                />
+                <label htmlFor="terms" className={`${styles.checkboxLabel} type-body-medium`}>
+                  I agree to FreshFold&apos;s{" "}
+                  <Link href="/terms" className={styles.link}>
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link href="/privacy" className={styles.link}>
+                    Privacy Policy
+                  </Link>
+                  .
+                </label>
+              </div>
+
               <button type="submit" className={`${styles.button} type-label-large`}>
                 Create account
               </button>
@@ -151,9 +155,6 @@ function AccountForms() {
         {activeForm === "login" && (
           <>
             <h1 className={`${styles.heading} type-headline-large`}>Welcome back</h1>
-            <p className={`${styles.intro} type-body-medium`}>
-              Log in to see your orders and how much of your monthly plan is left.
-            </p>
 
             <form className={styles.form}>
               <div className={styles.field}>
