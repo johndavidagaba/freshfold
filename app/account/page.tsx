@@ -214,7 +214,7 @@ function SignupForm() {
   return (
     <>
       <h1 className={`${styles.heading} type-headline-large`}>
-        Create your account
+        SIGN UP NOW!!!
       </h1>
 
       <form className={styles.form} onSubmit={handleSubmit} noValidate>
