@@ -1,0 +1,28 @@
+# Defeating my own rate limit (signup: 5 per 15 minutes per IP), Fri 30 Oct 2026, my laptop
+# The limiter keys on "signup:" + the first value of the X-Forwarded-For header (Next.js dev sets it to the client address).
+
+## 1. Triggered (~16:52 WAT): 6th request in the window from localhost
+{"error":"Too many attempts. Try again in 11 minutes."} -> 429
+
+## 2. Defeated by changing my IP address: same laptop, same request, via its Wi-Fi LAN address (~17:02 WAT)
+PS C:\Project\freshfold> curl.exe -sS -i -X POST http://192.168.1.8:3000/api/signup -H "Content-Type: application/json" --data-binary "@b.json"
+HTTP/1.1 201 Created
+{"id":"cmvv5unvv0004v8p4f6uduh2j","email":"ada9@example.com"}
+# To the server, 192.168.1.8 is a different client from localhost (::1), with its own counter.
+
+## (A badly timed check, kept for honesty: at ~17:03 localhost returned 201. Not a failure of the limit:
+##  the window that started ~16:48 had just expired. "Try again in 11 minutes" at 16:52 = reset at ~17:03.)
+
+## 3. Clean re-run (~17:04 WAT): fill the localhost limit, then defeat it with a forged header
+PS C:\Project\freshfold> 6..10 | ForEach-Object { ...signup ada2$_@example.com from localhost... }; ...signup spoof1@example.com with -H "X-Forwarded-For: 203.0.113.7"
+localhost ada26 -> 201
+localhost ada27 -> 201
+localhost ada28 -> 201
+localhost ada29 -> 201
+localhost ada210 -> 429      <- limit reached (ada10 earlier + these 4 = 5 in the window)
+fake header -> 201           <- same machine, same second, blocked one request earlier
+
+# Two ways past the limit:
+# (a) a genuinely different IP address: here my LAN address; in real life a phone hotspot, mobile data or a VPN.
+# (b) a forged X-Forwarded-For header: the server trusts a header the client wrote itself. 203.0.113.7 is a
+#     documentation address that never sent anything. Anyone with curl can be a "new visitor" on every request.

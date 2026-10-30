@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import styles from "./page.module.css";
 
-type FormKind = "signup" | "login" | "reset";
+type FormKind = "signup" | "login" | "reset" | "verify";
 
 type SignupValues = {
   name: string;
@@ -21,14 +21,50 @@ type SignupTouched = {
   password: boolean;
 };
 
+type ApiErrorResponse = {
+  error?: string;
+  errors?: Record<string, string[] | undefined>;
+  id?: string;
+  email?: string;
+  message?: string;
+  ok?: boolean;
+  verified?: boolean;
+};
+
+function firstFieldErrors(
+  errors: Record<string, string[] | undefined> | undefined
+): Record<string, string> {
+  const result: Record<string, string> = {};
+
+  if (!errors) return result;
+
+  for (const [field, messages] of Object.entries(errors)) {
+    if (messages && messages.length > 0) {
+      result[field] = messages[0];
+    }
+  }
+
+  return result;
+}
+
 const FORM_TITLES: Record<FormKind, string> = {
   signup: "Sign up · FreshFold",
   login: "Log in · FreshFold",
   reset: "Reset password · FreshFold",
+  verify: "Verify email · FreshFold",
 };
 
 function resolveForm(value: string | null): FormKind {
-  return value === "signup" || value === "reset" ? value : "login";
+  if (
+    value === "signup" ||
+    value === "login" ||
+    value === "reset" ||
+    value === "verify"
+  ) {
+    return value;
+  }
+
+  return "login";
 }
 
 function isValidName(value: string): boolean {
@@ -108,7 +144,7 @@ function InlineError({
   );
 }
 
-function SignupForm() {
+function SignupForm({ onSuccess }: { onSuccess: (email: string) => void }) {
   const [values, setValues] = useState<SignupValues>({
     name: "",
     email: "",
@@ -124,6 +160,8 @@ function SignupForm() {
   const [termsChecked, setTermsChecked] = useState(false);
   const [termsError, setTermsError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
+  const [serverError, setServerError] = useState("");
 
   const updateValue = (field: keyof SignupValues, value: string) => {
     setValues((current) => ({ ...current, [field]: value }));
@@ -166,10 +204,15 @@ function SignupForm() {
     touched.password && values.password.trim() === ""
       ? "Choose a password to protect your account."
       : "";
-  const showPasswordHint = !passwordError && values.password.length > 0;
+  const nameMessage = nameError || serverErrors.name || "";
+  const emailMessage = emailError || serverErrors.email || "";
+  const phoneMessage = phoneError || serverErrors.phone || "";
+  const passwordMessage = passwordError || serverErrors.password || "";
+  const termsMessage = termsError || serverErrors.terms || "";
+  const showPasswordHint = !passwordMessage && values.password.length > 0;
   const passwordDescribedBy =
     [
-      passwordError ? "signup-password-error" : "",
+      passwordMessage ? "signup-password-error" : "",
       showPasswordHint ? "signup-password-hint" : "",
     ]
       .filter(Boolean)
@@ -177,6 +220,8 @@ function SignupForm() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setServerErrors({});
+    setServerError("");
 
     if (!isSignupValid) {
       setTouched({
@@ -200,15 +245,33 @@ function SignupForm() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: values.name,
-        email: values.email,
+        email: values.email.trim().toLowerCase(),
         phone: values.phone,
-        password: values.password,
+        password: values.password.trim(),
         terms: termsChecked,
       }),
     });
-    const data = await response.json();
+    const data = (await response.json()) as ApiErrorResponse;
 
-    console.log(data);
+    if (response.status === 201) {
+      console.log(data);
+      onSuccess(data.email ?? values.email.trim().toLowerCase());
+      return;
+    }
+
+    if (response.status === 409) {
+      setServerErrors({
+        email: data.error ?? "An account with that email already exists.",
+      });
+      return;
+    }
+
+    if (data.errors) {
+      setServerErrors(firstFieldErrors(data.errors));
+      return;
+    }
+
+    setServerError(data.error ?? "Something went wrong. Try again.");
   };
 
   return (
@@ -230,13 +293,13 @@ function SignupForm() {
             value={values.name}
             onChange={(event) => updateValue("name", event.target.value)}
             onBlur={() => markTouched("name")}
-            aria-invalid={nameError ? true : undefined}
-            aria-describedby={nameError ? "signup-name-error" : undefined}
+            aria-invalid={nameMessage ? true : undefined}
+            aria-describedby={nameMessage ? "signup-name-error" : undefined}
             aria-required="true"
             className={`${styles.input} type-body-large`}
             placeholder="e.g. Tunde Adebayo"
           />
-          <InlineError id="signup-name-error" message={nameError} announce />
+          <InlineError id="signup-name-error" message={nameMessage} announce />
         </div>
 
         <div className={styles.field}>
@@ -251,13 +314,13 @@ function SignupForm() {
             value={values.email}
             onChange={(event) => updateValue("email", event.target.value)}
             onBlur={() => markTouched("email")}
-            aria-invalid={emailError ? true : undefined}
-            aria-describedby={emailError ? "signup-email-error" : undefined}
+            aria-invalid={emailMessage ? true : undefined}
+            aria-describedby={emailMessage ? "signup-email-error" : undefined}
             aria-required="true"
             className={`${styles.input} type-body-large`}
             placeholder="you@example.com"
           />
-          <InlineError id="signup-email-error" message={emailError} announce />
+          <InlineError id="signup-email-error" message={emailMessage} announce />
         </div>
 
         <div className={styles.field}>
@@ -273,13 +336,13 @@ function SignupForm() {
             value={values.phone}
             onChange={(event) => updateValue("phone", event.target.value)}
             onBlur={() => markTouched("phone")}
-            aria-invalid={phoneError ? true : undefined}
-            aria-describedby={phoneError ? "signup-phone-error" : undefined}
+            aria-invalid={phoneMessage ? true : undefined}
+            aria-describedby={phoneMessage ? "signup-phone-error" : undefined}
             aria-required="true"
             className={`${styles.input} type-body-large`}
             placeholder="e.g. 08012345678"
           />
-          <InlineError id="signup-phone-error" message={phoneError} announce />
+          <InlineError id="signup-phone-error" message={phoneMessage} announce />
         </div>
 
         <div className={styles.field}>
@@ -295,7 +358,7 @@ function SignupForm() {
               value={values.password}
               onChange={(event) => updateValue("password", event.target.value)}
               onBlur={() => markTouched("password")}
-              aria-invalid={passwordError ? true : undefined}
+              aria-invalid={passwordMessage ? true : undefined}
               aria-describedby={passwordDescribedBy}
               aria-required="true"
               className={`${styles.input} ${styles.passwordInput} type-body-large`}
@@ -312,7 +375,7 @@ function SignupForm() {
           </div>
           <InlineError
             id="signup-password-error"
-            message={passwordError}
+            message={passwordMessage}
             announce
           />
           {showPasswordHint && (
@@ -340,8 +403,8 @@ function SignupForm() {
                 setTermsError("");
               }
             }}
-            aria-invalid={termsError ? true : undefined}
-            aria-describedby={termsError ? "signup-terms-error" : undefined}
+            aria-invalid={termsMessage ? true : undefined}
+            aria-describedby={termsMessage ? "signup-terms-error" : undefined}
             aria-required="true"
             className={styles.checkbox}
           />
@@ -360,7 +423,13 @@ function SignupForm() {
 
         <InlineError
           id="signup-terms-error"
-          message={termsError}
+          message={termsMessage}
+          announce
+        />
+
+        <InlineError
+          id="signup-form-error"
+          message={serverError}
           announce
         />
 
@@ -383,7 +452,7 @@ function LoginForm() {
     form: "",
   });
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
@@ -402,9 +471,41 @@ function LoginForm() {
 
     setErrors(nextErrors);
 
-    if (!nextErrors.email && !nextErrors.password && !nextErrors.form) {
-      console.log("valid");
+    if (nextErrors.email || nextErrors.password || nextErrors.form) {
+      return;
     }
+
+    const response = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email.trim().toLowerCase(),
+        password: password.trim(),
+      }),
+    });
+    const data = (await response.json()) as ApiErrorResponse;
+
+    if (response.ok) {
+      console.log("valid");
+      return;
+    }
+
+    if (data.errors) {
+      const fieldErrors = firstFieldErrors(data.errors);
+
+      setErrors({
+        email: fieldErrors.email ?? "",
+        password: fieldErrors.password ?? "",
+        form: data.error ?? "",
+      });
+      return;
+    }
+
+    setErrors({
+      email: "",
+      password: "",
+      form: data.error ?? "Something went wrong. Try again.",
+    });
   };
 
   return (
@@ -453,10 +554,14 @@ function LoginForm() {
 
 function ResetForm() {
   const [error, setError] = useState("");
+  const [formError, setFormError] = useState("");
+  const [confirmation, setConfirmation] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setFormError("");
+    setSubmitted(false);
 
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get("email") ?? "");
@@ -465,11 +570,34 @@ function ResetForm() {
       : "That doesn't look like an email address.";
 
     setError(nextError);
-    setSubmitted(!nextError);
 
-    if (!nextError) {
-      console.log("valid");
+    if (nextError) return;
+
+    const response = await fetch("/api/reset", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email.trim().toLowerCase() }),
+    });
+    const data = (await response.json()) as ApiErrorResponse;
+
+    if (!response.ok) {
+      const fieldErrors = firstFieldErrors(data.errors);
+
+      setError(fieldErrors.email ?? "");
+      setFormError(
+        data.error ??
+          (fieldErrors.email ? "" : "Something went wrong. Try again.")
+      );
+      return;
     }
+
+    setError("");
+    setConfirmation(
+      data.message ??
+        "If an account uses that email, we've sent a reset link."
+    );
+    setSubmitted(true);
+    console.log("valid");
   };
 
   return (
@@ -497,13 +625,112 @@ function ResetForm() {
           <InlineError message={error} />
         </div>
 
+        <InlineError message={formError} />
+
         <button type="submit" className={`${styles.button} type-label-large`}>
           Send reset link
         </button>
 
         {submitted && (
           <p className={`${styles.confirmation} type-body-medium`}>
-            If an account uses that email, we&apos;ve sent a reset link.
+            {confirmation}
+          </p>
+        )}
+      </form>
+    </>
+  );
+}
+
+function VerifyForm({ email }: { email: string }) {
+  const [code, setCode] = useState("");
+  const [codeError, setCodeError] = useState("");
+  const [formError, setFormError] = useState("");
+  const [confirmation, setConfirmation] = useState("");
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setCodeError("");
+    setFormError("");
+    setConfirmation("");
+
+    const response = await fetch("/api/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email.trim().toLowerCase(),
+        code: code.trim(),
+      }),
+    });
+    const data = (await response.json()) as ApiErrorResponse;
+
+    if (response.ok) {
+      setConfirmation(data.message ?? "Email verified. You can log in now.");
+      return;
+    }
+
+    const fieldErrors = firstFieldErrors(data.errors);
+
+    if (fieldErrors.code) {
+      setCodeError(fieldErrors.code);
+      return;
+    }
+
+    if (fieldErrors.email) {
+      setFormError(fieldErrors.email);
+      return;
+    }
+
+    if (response.status === 429) {
+      setFormError(data.error ?? "Too many attempts. Try again later.");
+      return;
+    }
+
+    setCodeError(data.error ?? "Something went wrong. Try again.");
+  };
+
+  return (
+    <>
+      <h1 className={`${styles.heading} type-headline-large`}>
+        Verify your email
+      </h1>
+      <p className={`${styles.intro} type-body-medium`}>
+        We sent a 6-digit code to {email || "your email"}.
+      </p>
+
+      <form className={styles.form} onSubmit={handleSubmit} noValidate>
+        <div className={styles.field}>
+          <label
+            htmlFor="verificationCode"
+            className={`${styles.label} type-label-large`}
+          >
+            6-digit code
+          </label>
+          <input
+            id="verificationCode"
+            name="code"
+            type="text"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            maxLength={6}
+            value={code}
+            onChange={(event) => setCode(event.target.value)}
+            aria-invalid={codeError ? true : undefined}
+            aria-describedby={codeError ? "verify-code-error" : undefined}
+            aria-required="true"
+            className={`${styles.input} type-body-large`}
+          />
+          <InlineError id="verify-code-error" message={codeError} announce />
+        </div>
+
+        <InlineError id="verify-form-error" message={formError} announce />
+
+        <button type="submit" className={`${styles.button} type-label-large`}>
+          Verify
+        </button>
+
+        {confirmation && (
+          <p className={`${styles.confirmation} type-body-medium`} role="status">
+            {confirmation}
           </p>
         )}
       </form>
@@ -516,6 +743,7 @@ function AccountForms() {
   const [activeForm, setActiveForm] = useState<FormKind>(() =>
     resolveForm(searchParams.get("form"))
   );
+  const [verifyEmail, setVerifyEmail] = useState("");
 
   useEffect(() => {
     document.title = FORM_TITLES[activeForm];
@@ -543,9 +771,18 @@ function AccountForms() {
   return (
     <main className={styles.container}>
       <section className={styles.card}>
-        {activeForm === "signup" && <SignupForm />}
+        {activeForm === "signup" && (
+          <SignupForm
+            onSuccess={(email) => {
+              setVerifyEmail(email);
+              setActiveForm("verify");
+              window.history.replaceState(null, "", "/account?form=verify");
+            }}
+          />
+        )}
         {activeForm === "login" && <LoginForm />}
         {activeForm === "reset" && <ResetForm />}
+        {activeForm === "verify" && <VerifyForm email={verifyEmail} />}
 
         <nav className={styles.links} aria-label="Other account pages">
           {activeForm !== "login" && (

@@ -1,0 +1,12 @@
+# SMTP success after the fix (Fri 30 Oct 2026). Host smtp.gmail.com, port 465, secure (implicit TLS).
+# Fix: created a Google App Password (needed 2-Step Verification turned on first, and Google required a phone number
+# as a second step before it would turn it on), wrote it into .env with Read-Host so it was never shown on screen,
+# checked only its length (16), restarted the dev server.
+
+PS> curl ... POST /api/signup  (j***+ff3@gmail.com, EMAIL_MODE="sync", ~20:57 WAT)
+{"id":"cmvve8g9v0000v8qo1jbhyvi9","email":"j***+ff3@gmail.com"} -> 201 12.755605s
+# The email arrived in the Gmail inbox at 8:57 PM: subject "Your FreshFold verification code", code 835026,
+# "It expires in 10 minutes." (evidence 23-rendered-email.png)
+
+# Background send, dev server log (~21:06 WAT):
+[mail] sent to j***+ff6@gmail.com in 7591ms

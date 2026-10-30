@@ -1,0 +1,29 @@
+# Email verification flow tested with curl (Fri 30 Oct 2026, 20:57-20:59 WAT). Addresses are Gmail +aliases of my own inbox (redacted).
+# Signup j***+ff3@gmail.com at 20:57 -> email arrived at 20:57 with code 835026, "It expires in 10 minutes."
+
+PS> {"email":"j***+ff3@gmail.com","code":"000000"}  -> POST /api/verify
+{"error":"Invalid code."} wrong code -> 400
+
+PS> {"email":"j***+ff3@gmail.com","code":"835026"}  -> POST /api/verify
+{"message":"Email verified. You can log in now."} right code -> 200
+
+PS> the SAME request again
+{"message":"Email verified. You can log in now."} same code again -> 200      <- DEFECT, see below
+
+PS> {"email":"j***+ff2@gmail.com","code":"123456"}  (ff2's code was created at 20:45, the failed-SMTP signup)
+{"error":"This code has expired. Request a new one."} expired (ff2, sent 20:45) -> 410
+
+## The reuse defect (documented, not quietly fixed, as the brief asks)
+lib/verification.ts sets usedAt when a code succeeds, but never CHECKS usedAt. A used code keeps working until it expires.
+The agent said so itself: "usedAt is not checked as an invalidating condition because the rules did not request it."
+I wrote the rules and I did not say "reject used codes", so the gap is mine as much as the agent's.
+Impact here is small (the account is already verified), but the same pattern on a password-reset or login code would let
+anyone who sees an old code reuse it for 10 minutes.
+
+## The rows (Prisma Studio, VerificationCode, ~21:03 WAT; times in UTC, Lagos = UTC+1)
+codeHash          expiresAt                  usedAt                     attempts  createdAt
+58d5aada83f8...   2026-10-30T17:54:08.171Z   null                       0         2026-10-30T17:44:08.175Z   (ff1, background send failed: no SMTP settings)
+1b1c85f37b13...   2026-10-30T19:55:20.169Z   null                       0         2026-10-30T19:45:20.172Z   (ff2, sync send failed: 535; used for the expiry test)
+6b8764c8f86b...   2026-10-30T20:07:03.264Z   2026-10-30T19:59:31.277Z   1         2026-10-30T19:57:03.269Z   (ff3, delivered; 1 wrong attempt, then used)
+# The code itself is never stored, only its SHA-256. expiresAt - createdAt = exactly 10 minutes.
+# Row 3 has usedAt set, yet the second request with the same code still returned 200: usedAt is written but never read.

@@ -1,0 +1,30 @@
+# Registration response time: email sent INSIDE the request vs in a BACKGROUND job (Fri 30 Oct 2026, my laptop, dev server)
+# Background = Next.js after() from next/server: the response is sent first, then the email is sent.
+
+## Email inside the request (EMAIL_MODE="sync"), route already compiled, ~21:04 WAT
+{"id":"cmvveiydq0003v8qokxuufec8","email":"j***+ff4@gmail.com"} sync -> 201 16.622384s
+
+## Email in the background (EMAIL_MODE="background"), after a restart, ~21:06 WAT
+ background ff5 -> 500 6.808645s     <- the database was asleep: the rate limiter's query could not reach Neon (see below)
+ background ff6 -> 201 5.862882s
+
+Dev server log for ff6:
+[signup] parse 10ms validate 14ms breach 2128ms hash 17ms db 1087ms email 4ms (background) total 5833ms
+ POST /api/signup 201 in 5855ms
+[mail] sent to j***+ff6@gmail.com in 7591ms      <- AFTER the response had already been sent
+
+## My two numbers
+Sync:        16.6 s for the customer to get an answer
+Background:   5.9 s, of which the email step took 4 ms
+The email itself took 7.6 s to send through Gmail, and in the background version the customer never waits for it.
+The remaining 5.9 s is not email: breach check 2.1 s and database 1.1 s (both cold after the restart), plus the rate limiter's
+database round trips. That is the network cost found in evidence 11.
+
+## Side finding: ff5 returned 500
+Error [PrismaClientInitializationError]: Invalid `prisma.rateLimit.findUnique()` invocation:
+Can't reach database server at `ep-twilight-haze-zacodebv.c-2.eu-west-2.aws.neon.tech:5432`
+    at async limit (lib\rateLimit.ts:24:18)
+    at async POST (app\api\signup\route.ts:27:20)
+ POST /api/signup 500 in 6783ms
+# When the rate-limit store is unavailable, my limiter crashes the request: it "fails closed" by accident,
+# with a 500 instead of a deliberate decision.

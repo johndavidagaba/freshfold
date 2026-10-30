@@ -1,0 +1,41 @@
+# Drift error on purpose (Fri 30 Oct 2026 ~16:18 WAT)
+# 1. Added `notes String?` to PickupRequest in prisma/schema.prisma.
+# 2. Ran ONLY `npx.cmd prisma generate` (rebuilds the client and its types). No migration.
+# 3. Restarted the dev server and submitted a booking on /schedule.
+
+PS C:\Project\freshfold> npx.cmd prisma generate
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+✔ Generated Prisma Client (v6.19.3) to .\node_modules\@prisma\client in 142ms
+
+## Dev server log on submit:
+prisma:error
+Invalid `prisma.pickupRequest.create()` invocation:
+
+The column `PickupRequest.notes` does not exist in the current database.
+Error creating pickup request: Error [PrismaClientKnownRequestError]:
+Invalid `prisma.pickupRequest.create()` invocation:
+
+The column `PickupRequest.notes` does not exist in the current database.
+    at async schedulePickupAction (app\schedule\actions.ts:45:20)
+  code: 'P2022',
+  meta: [Object],
+  clientVersion: '6.19.3'
+}
+ POST /schedule 200 in 6154ms
+
+## The page showed: "Unable to save pickup request. Please try again."
+
+# Note: the first attempt failed differently ("Can't reach database server", Neon waking up), and the
+# Prisma client kept that failed start until a restart, the same behaviour as Task 2. Both failures produced
+# the identical message on the page and the same POST 200.
+
+## The fix: migrate, so the database catches up with the client
+PS C:\Project\freshfold> npx.cmd prisma migrate dev --name add_pickup_notes
+Applying migration `20261030152049_add_pickup_notes`
+The following migration(s) have been created and applied from new schema changes:
+prisma\migrations/
+  └─ 20261030152049_add_pickup_notes/
+    └─ migration.sql
+Your database is now in sync with your schema.
+✔ Generated Prisma Client (v6.19.3) to .\node_modules\@prisma\client in 144ms

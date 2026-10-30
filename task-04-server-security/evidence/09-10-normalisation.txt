@@ -1,0 +1,20 @@
+# Email lowercasing and password trimming (Fri 30 Oct 2026 ~17:12 WAT, via http://192.168.1.8:3000)
+
+## Registered in the browser with:
+Email:    Kemi.Ade@Example.com          (capitals, as a phone keyboard would type it)
+Password: "my laundry day 2026 "        (ONE trailing space, as copying a password often adds)
+(First click created the account; the form shows no success message, so a second click returned
+ 409 "An account with that email already exists.", which also shows the capitalised email matched
+ the stored lowercase one. Screenshot: 09-signup-capital-email-then-409.png)
+
+## Logged in with lowercase email and NO trailing space:
+PS C:\Project\freshfold> '{"email":"kemi.ade@example.com","password":"my laundry day 2026"}' | Out-File -Encoding ascii login.json; curl.exe -sS -w " -> %{http_code}`n" -X POST http://192.168.1.8:3000/api/login -H "Content-Type: application/json" --data-binary "@login.json"
+{"ok":true,"verified":false} -> 200
+
+# Email: trimmed and lowercased on signup, login and reset, so "Kemi.Ade@Example.com" and "kemi.ade@example.com" are one account.
+# Password: leading/trailing whitespace trimmed on signup and login, so the stored hash is of "my laundry day 2026",
+# and the login without the accidental space succeeds. The inner spaces and the letters' case are untouched.
+
+## Passwords are NOT lowercased: same password with different capitals is refused
+PS C:\Project\freshfold> '{"email":"kemi.ade@example.com","password":"My Laundry Day 2026"}' | Out-File -Encoding ascii login.json; curl.exe ... /api/login ...
+{"error":"Email or password is incorrect."} -> 401

@@ -1,0 +1,30 @@
+# The same direct request, Task 3 vs Task 4 (bypassing the browser form entirely)
+
+## THE REQUEST (identical both times)
+PS C:\Project\freshfold> '{"name":"a","email":"not-an-email","phone":"123","password":"   ","terms":false}' | Out-File -Encoding ascii bad.json
+PS C:\Project\freshfold> curl.exe -s -i -X POST http://localhost:3000/api/signup -H "Content-Type: application/json" --data-binary "@bad.json"
+
+## TASK 3 RESPONSE (Fri 30 Oct 2026 ~09:05 WAT, route with no server validation)
+HTTP/1.1 201 Created
+content-type: application/json
+
+{"received":{"name":"a","email":"not-an-email","phone":"123","password":"   ","terms":false}}
+
+## TASK 4 RESPONSE (Fri 30 Oct 2026 ~16:48 WAT, zod schema at the boundary)
+HTTP/1.1 400 Bad Request
+content-type: application/json
+
+{"errors":{"name":["Too small: expected string to have >=2 characters","Invalid input"],"email":["Invalid input"],"phone":["Invalid input"],"password":["Too small: expected string to have >=12 characters"],"terms":["Invalid input: expected true"]}}
+
+## WHAT CHANGED
+| Field    | Sent             | Task 3     | Task 4                                             |
+|----------|------------------|------------|----------------------------------------------------|
+| name     | "a"              | accepted   | refused: under 2 characters, fails letters rule     |
+| email    | "not-an-email"   | accepted   | refused: invalid format                             |
+| phone    | "123"            | accepted   | refused: not a Nigerian mobile shape                |
+| password | "   " (3 spaces) | accepted   | refused: trimmed to "", under 12 characters         |
+| terms    | false            | accepted   | refused: must be true                               |
+| (body)   | (echoed back, password included) | nothing saved, nothing echoed |                  |
+
+Every Task 3 rule is now enforced where it matters: on the server, before anything touches the database.
+Remaining weakness: the error text is zod's default English ("Too small: expected string..."), not FreshFold's wording.
