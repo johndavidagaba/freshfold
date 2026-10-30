@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import styles from "./page.module.css";
 
-type FormKind = "signup" | "login" | "reset";
+type FormKind = "signup" | "login" | "reset" | "verify";
 
 type SignupValues = {
   name: string;
@@ -51,10 +51,20 @@ const FORM_TITLES: Record<FormKind, string> = {
   signup: "Sign up · FreshFold",
   login: "Log in · FreshFold",
   reset: "Reset password · FreshFold",
+  verify: "Verify email · FreshFold",
 };
 
 function resolveForm(value: string | null): FormKind {
-  return value === "signup" || value === "reset" ? value : "login";
+  if (
+    value === "signup" ||
+    value === "login" ||
+    value === "reset" ||
+    value === "verify"
+  ) {
+    return value;
+  }
+
+  return "login";
 }
 
 function isValidName(value: string): boolean {
@@ -134,7 +144,7 @@ function InlineError({
   );
 }
 
-function SignupForm() {
+function SignupForm({ onSuccess }: { onSuccess: (email: string) => void }) {
   const [values, setValues] = useState<SignupValues>({
     name: "",
     email: "",
@@ -245,6 +255,7 @@ function SignupForm() {
 
     if (response.status === 201) {
       console.log(data);
+      onSuccess(data.email ?? values.email.trim().toLowerCase());
       return;
     }
 
@@ -630,11 +641,109 @@ function ResetForm() {
   );
 }
 
+function VerifyForm({ email }: { email: string }) {
+  const [code, setCode] = useState("");
+  const [codeError, setCodeError] = useState("");
+  const [formError, setFormError] = useState("");
+  const [confirmation, setConfirmation] = useState("");
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setCodeError("");
+    setFormError("");
+    setConfirmation("");
+
+    const response = await fetch("/api/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email.trim().toLowerCase(),
+        code: code.trim(),
+      }),
+    });
+    const data = (await response.json()) as ApiErrorResponse;
+
+    if (response.ok) {
+      setConfirmation(data.message ?? "Email verified. You can log in now.");
+      return;
+    }
+
+    const fieldErrors = firstFieldErrors(data.errors);
+
+    if (fieldErrors.code) {
+      setCodeError(fieldErrors.code);
+      return;
+    }
+
+    if (fieldErrors.email) {
+      setFormError(fieldErrors.email);
+      return;
+    }
+
+    if (response.status === 429) {
+      setFormError(data.error ?? "Too many attempts. Try again later.");
+      return;
+    }
+
+    setCodeError(data.error ?? "Something went wrong. Try again.");
+  };
+
+  return (
+    <>
+      <h1 className={`${styles.heading} type-headline-large`}>
+        Verify your email
+      </h1>
+      <p className={`${styles.intro} type-body-medium`}>
+        We sent a 6-digit code to {email || "your email"}.
+      </p>
+
+      <form className={styles.form} onSubmit={handleSubmit} noValidate>
+        <div className={styles.field}>
+          <label
+            htmlFor="verificationCode"
+            className={`${styles.label} type-label-large`}
+          >
+            6-digit code
+          </label>
+          <input
+            id="verificationCode"
+            name="code"
+            type="text"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            maxLength={6}
+            value={code}
+            onChange={(event) => setCode(event.target.value)}
+            aria-invalid={codeError ? true : undefined}
+            aria-describedby={codeError ? "verify-code-error" : undefined}
+            aria-required="true"
+            className={`${styles.input} type-body-large`}
+          />
+          <InlineError id="verify-code-error" message={codeError} announce />
+        </div>
+
+        <InlineError id="verify-form-error" message={formError} announce />
+
+        <button type="submit" className={`${styles.button} type-label-large`}>
+          Verify
+        </button>
+
+        {confirmation && (
+          <p className={`${styles.confirmation} type-body-medium`} role="status">
+            {confirmation}
+          </p>
+        )}
+      </form>
+    </>
+  );
+}
+
 function AccountForms() {
   const searchParams = useSearchParams();
   const [activeForm, setActiveForm] = useState<FormKind>(() =>
     resolveForm(searchParams.get("form"))
   );
+  const [verifyEmail, setVerifyEmail] = useState("");
 
   useEffect(() => {
     document.title = FORM_TITLES[activeForm];
@@ -662,9 +771,18 @@ function AccountForms() {
   return (
     <main className={styles.container}>
       <section className={styles.card}>
-        {activeForm === "signup" && <SignupForm />}
+        {activeForm === "signup" && (
+          <SignupForm
+            onSuccess={(email) => {
+              setVerifyEmail(email);
+              setActiveForm("verify");
+              window.history.replaceState(null, "", "/account?form=verify");
+            }}
+          />
+        )}
         {activeForm === "login" && <LoginForm />}
         {activeForm === "reset" && <ResetForm />}
+        {activeForm === "verify" && <VerifyForm email={verifyEmail} />}
 
         <nav className={styles.links} aria-label="Other account pages">
           {activeForm !== "login" && (

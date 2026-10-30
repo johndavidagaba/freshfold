@@ -46,3 +46,10 @@ export const resetSchema = z
     email: emailSchema,
   })
   .strict();
+
+export const verifySchema = z
+  .object({
+    email: emailSchema,
+    code: z.string().trim().regex(/^\d{6}$/),
+  })
+  .strict();

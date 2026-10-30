@@ -1,9 +1,11 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { getBreachCount } from "@/lib/breach";
+import { sendVerificationEmail } from "@/lib/mailer";
 import { hashPassword } from "@/lib/password";
 import { prisma } from "@/lib/prisma";
 import { getClientIp, limit } from "@/lib/rateLimit";
 import { signupSchema } from "@/lib/validation";
+import { createCode } from "@/lib/verification";
 
 const WINDOW_MS = 15 * 60 * 1000;
 
@@ -92,7 +94,25 @@ export async function POST(request: Request) {
       termsAcceptedAt: new Date(),
     },
   });
+  const verificationCode = await createCode(user.id);
   const dbMs = performance.now() - dbStart;
+  const emailMode =
+    process.env.EMAIL_MODE === "sync" ? "sync" : "background";
+  const emailStart = performance.now();
+
+  if (emailMode === "sync") {
+    await sendVerificationEmail(user.email, user.name, verificationCode);
+  } else {
+    after(async () => {
+      try {
+        await sendVerificationEmail(user.email, user.name, verificationCode);
+      } catch (error) {
+        console.error("[signup] background verification email failed", error);
+      }
+    });
+  }
+
+  const emailMs = performance.now() - emailStart;
   const totalMs = performance.now() - totalStart;
 
   console.log(
@@ -100,7 +120,9 @@ export async function POST(request: Request) {
       validateMs
     )}ms breach ${Math.round(breachMs)}ms hash ${Math.round(
       hashMs
-    )}ms db ${Math.round(dbMs)}ms total ${Math.round(totalMs)}ms`
+    )}ms db ${Math.round(dbMs)}ms email ${Math.round(emailMs)}ms (${emailMode}) total ${Math.round(
+      totalMs
+    )}ms`
   );
 
   return NextResponse.json(
