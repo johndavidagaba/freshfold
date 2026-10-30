@@ -65,6 +65,37 @@ function isValidPassword(value: string): boolean {
   return length >= 12 && length <= 128 && value.trim().length > 0;
 }
 
+function InlineError({ message }: { message: string }) {
+  if (!message) return null;
+
+  return (
+    <p className={`${styles.error} type-body-small`}>
+      <svg
+        className={styles.errorIcon}
+        viewBox="0 0 20 20"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path
+          d="M10 3 1.5 18h17L10 3Z"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M10 8v4"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <circle cx="10" cy="15" r="1" fill="currentColor" />
+      </svg>
+      <span>{message}</span>
+    </p>
+  );
+}
+
 function SignupForm() {
   const [values, setValues] = useState<SignupValues>({
     name: "",
@@ -79,6 +110,7 @@ function SignupForm() {
     password: false,
   });
   const [termsChecked, setTermsChecked] = useState(false);
+  const [termsError, setTermsError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const updateValue = (field: keyof SignupValues, value: string) => {
@@ -124,12 +156,33 @@ function SignupForm() {
       : "";
   const showPasswordHint = !passwordError && values.password.length > 0;
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleCreateClick = () => {
+    if (!termsChecked) {
+      setTermsError(
+        "Tick the box to accept the terms before creating your account."
+      );
+    }
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (isSignupValid) {
-      console.log("valid");
-    }
+    if (!isSignupValid) return;
+
+    const response = await fetch("/api/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        password: values.password,
+        terms: termsChecked,
+      }),
+    });
+    const data = await response.json();
+
+    console.log(data);
   };
 
   return (
@@ -154,9 +207,7 @@ function SignupForm() {
             className={`${styles.input} type-body-large`}
             placeholder="e.g. Tunde Adebayo"
           />
-          {nameError && (
-            <p className={`${styles.error} type-body-small`}>{nameError}</p>
-          )}
+          <InlineError message={nameError} />
         </div>
 
         <div className={styles.field}>
@@ -174,9 +225,7 @@ function SignupForm() {
             className={`${styles.input} type-body-large`}
             placeholder="you@example.com"
           />
-          {emailError && (
-            <p className={`${styles.error} type-body-small`}>{emailError}</p>
-          )}
+          <InlineError message={emailError} />
         </div>
 
         <div className={styles.field}>
@@ -195,9 +244,7 @@ function SignupForm() {
             className={`${styles.input} type-body-large`}
             placeholder="e.g. 08012345678"
           />
-          {phoneError && (
-            <p className={`${styles.error} type-body-small`}>{phoneError}</p>
-          )}
+          <InlineError message={phoneError} />
         </div>
 
         <div className={styles.field}>
@@ -223,9 +270,7 @@ function SignupForm() {
               {showPassword ? "Hide" : "Show"}
             </button>
           </div>
-          {passwordError && (
-            <p className={`${styles.error} type-body-small`}>{passwordError}</p>
-          )}
+          <InlineError message={passwordError} />
           {showPasswordHint && (
             <p className={`${styles.hint} type-body-small`}>
               At least 12 characters
@@ -240,7 +285,14 @@ function SignupForm() {
             type="checkbox"
             required
             checked={termsChecked}
-            onChange={(event) => setTermsChecked(event.target.checked)}
+            onChange={(event) => {
+              const checked = event.target.checked;
+
+              setTermsChecked(checked);
+              if (checked) {
+                setTermsError("");
+              }
+            }}
             className={styles.checkbox}
           />
           <label htmlFor="terms" className={`${styles.checkboxLabel} type-body-medium`}>
@@ -256,18 +308,28 @@ function SignupForm() {
           </label>
         </div>
 
-        {isSignupValid && (
-          <button type="submit" className={`${styles.button} type-label-large`}>
+        <InlineError message={termsError} />
+
+        <div className={styles.submitArea} onClick={handleCreateClick}>
+          <button
+            type="submit"
+            disabled={!isSignupValid}
+            className={`${styles.button} type-label-large`}
+          >
             Create account
           </button>
-        )}
+        </div>
       </form>
     </>
   );
 }
 
 function LoginForm() {
-  const [errors, setErrors] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    form: "",
+  });
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -275,16 +337,20 @@ function LoginForm() {
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get("email") ?? "");
     const password = String(formData.get("password") ?? "");
+    const emailEmpty = email.trim() === "";
+    const passwordEmpty = password.trim() === "";
     const nextErrors = {
-      email: isValidEmail(email)
-        ? ""
-        : "That doesn't look like an email address.",
-      password: password.trim() === "" ? "Enter your password." : "",
+      email: emailEmpty ? "Enter your email." : "",
+      password: passwordEmpty ? "Enter your password." : "",
+      form:
+        !emailEmpty && !passwordEmpty && !isValidEmail(email)
+          ? "Email or password is incorrect."
+          : "",
     };
 
     setErrors(nextErrors);
 
-    if (!nextErrors.email && !nextErrors.password) {
+    if (!nextErrors.email && !nextErrors.password && !nextErrors.form) {
       console.log("valid");
     }
   };
@@ -306,9 +372,7 @@ function LoginForm() {
             className={`${styles.input} type-body-large`}
             placeholder="you@example.com"
           />
-          {errors.email && (
-            <p className={`${styles.error} type-body-small`}>{errors.email}</p>
-          )}
+          <InlineError message={errors.email} />
         </div>
 
         <div className={styles.field}>
@@ -322,10 +386,10 @@ function LoginForm() {
             autoComplete="current-password"
             className={`${styles.input} type-body-large`}
           />
-          {errors.password && (
-            <p className={`${styles.error} type-body-small`}>{errors.password}</p>
-          )}
+          <InlineError message={errors.password} />
         </div>
+
+        <InlineError message={errors.form} />
 
         <button type="submit" className={`${styles.button} type-label-large`}>
           Log in
@@ -337,6 +401,7 @@ function LoginForm() {
 
 function ResetForm() {
   const [error, setError] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -348,6 +413,7 @@ function ResetForm() {
       : "That doesn't look like an email address.";
 
     setError(nextError);
+    setSubmitted(!nextError);
 
     if (!nextError) {
       console.log("valid");
@@ -376,14 +442,18 @@ function ResetForm() {
             className={`${styles.input} type-body-large`}
             placeholder="you@example.com"
           />
-          {error && (
-            <p className={`${styles.error} type-body-small`}>{error}</p>
-          )}
+          <InlineError message={error} />
         </div>
 
         <button type="submit" className={`${styles.button} type-label-large`}>
           Send reset link
         </button>
+
+        {submitted && (
+          <p className={`${styles.confirmation} type-body-medium`}>
+            If an account uses that email, we&apos;ve sent a reset link.
+          </p>
+        )}
       </form>
     </>
   );

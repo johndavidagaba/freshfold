@@ -122,11 +122,30 @@
 }
 
 .error {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
   color: var(--color-error);
+}
+
+.errorIcon {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  flex-shrink: 0;
 }
 
 .hint {
   color: var(--color-on-surface-variant);
+}
+
+.confirmation {
+  color: var(--color-on-surface-variant);
+}
+
+.submitArea {
+  display: flex;
+  align-self: flex-start;
 }
 
 .button {
@@ -158,6 +177,12 @@
 .button:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .links {
