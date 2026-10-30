@@ -65,11 +65,23 @@ function isValidPassword(value: string): boolean {
   return length >= 12 && length <= 128 && value.trim().length > 0;
 }
 
-function InlineError({ message }: { message: string }) {
+function InlineError({
+  id,
+  message,
+  announce = false,
+}: {
+  id?: string;
+  message: string;
+  announce?: boolean;
+}) {
   if (!message) return null;
 
   return (
-    <p className={`${styles.error} type-body-small`}>
+    <p
+      id={id}
+      role={announce ? "alert" : undefined}
+      className={`${styles.error} type-body-small`}
+    >
       <svg
         className={styles.errorIcon}
         viewBox="0 0 20 20"
@@ -155,19 +167,33 @@ function SignupForm() {
       ? "Choose a password to protect your account."
       : "";
   const showPasswordHint = !passwordError && values.password.length > 0;
-
-  const handleCreateClick = () => {
-    if (!termsChecked) {
-      setTermsError(
-        "Tick the box to accept the terms before creating your account."
-      );
-    }
-  };
+  const passwordDescribedBy =
+    [
+      passwordError ? "signup-password-error" : "",
+      showPasswordHint ? "signup-password-hint" : "",
+    ]
+      .filter(Boolean)
+      .join(" ") || undefined;
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!isSignupValid) return;
+    if (!isSignupValid) {
+      setTouched({
+        name: true,
+        email: true,
+        phone: true,
+        password: true,
+      });
+
+      if (!termsChecked) {
+        setTermsError(
+          "Tick the box to accept the terms before creating your account."
+        );
+      }
+
+      return;
+    }
 
     const response = await fetch("/api/signup", {
       method: "POST",
@@ -204,10 +230,13 @@ function SignupForm() {
             value={values.name}
             onChange={(event) => updateValue("name", event.target.value)}
             onBlur={() => markTouched("name")}
+            aria-invalid={nameError ? true : undefined}
+            aria-describedby={nameError ? "signup-name-error" : undefined}
+            aria-required="true"
             className={`${styles.input} type-body-large`}
             placeholder="e.g. Tunde Adebayo"
           />
-          <InlineError message={nameError} />
+          <InlineError id="signup-name-error" message={nameError} announce />
         </div>
 
         <div className={styles.field}>
@@ -222,10 +251,13 @@ function SignupForm() {
             value={values.email}
             onChange={(event) => updateValue("email", event.target.value)}
             onBlur={() => markTouched("email")}
+            aria-invalid={emailError ? true : undefined}
+            aria-describedby={emailError ? "signup-email-error" : undefined}
+            aria-required="true"
             className={`${styles.input} type-body-large`}
             placeholder="you@example.com"
           />
-          <InlineError message={emailError} />
+          <InlineError id="signup-email-error" message={emailError} announce />
         </div>
 
         <div className={styles.field}>
@@ -241,10 +273,13 @@ function SignupForm() {
             value={values.phone}
             onChange={(event) => updateValue("phone", event.target.value)}
             onBlur={() => markTouched("phone")}
+            aria-invalid={phoneError ? true : undefined}
+            aria-describedby={phoneError ? "signup-phone-error" : undefined}
+            aria-required="true"
             className={`${styles.input} type-body-large`}
             placeholder="e.g. 08012345678"
           />
-          <InlineError message={phoneError} />
+          <InlineError id="signup-phone-error" message={phoneError} announce />
         </div>
 
         <div className={styles.field}>
@@ -260,19 +295,31 @@ function SignupForm() {
               value={values.password}
               onChange={(event) => updateValue("password", event.target.value)}
               onBlur={() => markTouched("password")}
+              aria-invalid={passwordError ? true : undefined}
+              aria-describedby={passwordDescribedBy}
+              aria-required="true"
               className={`${styles.input} ${styles.passwordInput} type-body-large`}
             />
             <button
               type="button"
               onClick={() => setShowPassword((current) => !current)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-pressed={showPassword}
               className={`${styles.toggleButton} type-label-large`}
             >
               {showPassword ? "Hide" : "Show"}
             </button>
           </div>
-          <InlineError message={passwordError} />
+          <InlineError
+            id="signup-password-error"
+            message={passwordError}
+            announce
+          />
           {showPasswordHint && (
-            <p className={`${styles.hint} type-body-small`}>
+            <p
+              id="signup-password-hint"
+              className={`${styles.hint} type-body-small`}
+            >
               At least 12 characters
             </p>
           )}
@@ -293,6 +340,9 @@ function SignupForm() {
                 setTermsError("");
               }
             }}
+            aria-invalid={termsError ? true : undefined}
+            aria-describedby={termsError ? "signup-terms-error" : undefined}
+            aria-required="true"
             className={styles.checkbox}
           />
           <label htmlFor="terms" className={`${styles.checkboxLabel} type-body-medium`}>
@@ -308,17 +358,19 @@ function SignupForm() {
           </label>
         </div>
 
-        <InlineError message={termsError} />
+        <InlineError
+          id="signup-terms-error"
+          message={termsError}
+          announce
+        />
 
-        <div className={styles.submitArea} onClick={handleCreateClick}>
-          <button
-            type="submit"
-            disabled={!isSignupValid}
-            className={`${styles.button} type-label-large`}
-          >
-            Create account
-          </button>
-        </div>
+        <button
+          type="submit"
+          aria-disabled={!isSignupValid}
+          className={`${styles.button} type-label-large`}
+        >
+          Create account
+        </button>
       </form>
     </>
   );
