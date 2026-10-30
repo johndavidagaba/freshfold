@@ -1,0 +1,26 @@
+# Roll back by commit ID (Fri 30 Oct 2026, ~09:50 WAT), branch feature/auth-forms
+
+## The regretted change
+Asked the agent to change the signup heading "Create your account" to "SIGN UP NOW!!!", then committed it.
+
+## Commit list
+PS C:\Project\freshfold> git log --oneline -6
+037a3d3 (HEAD -> feature/auth-forms) Change signup heading to SIGN UP NOW
+c7f7d91 Accessibility: focusable aria-disabled submit, linked and announced errors, aria-required, named password toggle
+3da1f0f Disabled submit with terms message, caution icons, generic login error, neutral reset message, unvalidated /api/signup endpoint
+0861457 Add client-side validation: empty fields, name, Nigerian phone, real-time signup email, submit-only login email, show/hide password, hidden submit button
+8f43e41 Signup: remove pickup address, add terms acceptance, remove subtitles promising unbuilt features
+f176c38 Collapse signup, login and reset into one /account page; switch forms in the browser with history.replaceState
+
+## The ID I chose: 037a3d3 (the regretted commit itself)
+
+## The command
+PS C:\Project\freshfold> git revert --no-edit 037a3d3
+[feature/auth-forms c6a6eed] Revert "Change signup heading to SIGN UP NOW"
+ Date: Fri Oct 30 09:50:37 2026 +0100
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+PS C:\Project\freshfold> git log --oneline -3
+c6a6eed (HEAD -> feature/auth-forms) Revert "Change signup heading to SIGN UP NOW"
+037a3d3 Change signup heading to SIGN UP NOW
+c7f7d91 Accessibility: focusable aria-disabled submit, linked and announced errors, aria-required, named password toggle

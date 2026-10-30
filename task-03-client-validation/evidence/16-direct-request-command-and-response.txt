@@ -1,0 +1,30 @@
+# Direct request to the signup endpoint, bypassing the browser form (Fri 30 Oct 2026, ~09:05 WAT)
+# Windows PowerShell 5, curl.exe, dev server on localhost:3000
+
+## Attempt 1: JSON inline
+PS C:\Project\freshfold> curl.exe -s -i -X POST http://localhost:3000/api/signup -H "Content-Type: application/json" -d "{\"name\":\"a\",\"email\":\"not-an-email\",\"phone\":\"123\",\"password\":\"   \",\"terms\":false}"
+HTTP/1.1 500 Internal Server Error
+vary: RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch
+Date: Fri, 30 Oct 2026 08:04:52 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+# PowerShell 5 strips the backslash-escaped quotes when passing arguments to curl.exe, so the body arrived as
+# invalid JSON. The route does not catch a JSON parse error, so it crashed with 500 instead of answering 400.
+
+## Attempt 2: JSON from a file
+PS C:\Project\freshfold> '{"name":"a","email":"not-an-email","phone":"123","password":"   ","terms":false}' | Out-File -Encoding ascii body.json
+PS C:\Project\freshfold> curl.exe -s -i -X POST http://localhost:3000/api/signup -H "Content-Type: application/json" --data-binary "@body.json"
+HTTP/1.1 201 Created
+vary: RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch
+content-type: application/json
+Date: Fri, 30 Oct 2026 08:05:57 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+{"received":{"name":"a","email":"not-an-email","phone":"123","password":"   ","terms":false}}
+
+# 201 Created for: a one-letter name, an email with no @, a 3-digit phone, a password of three spaces,
+# and terms NOT accepted. Every rule the form enforces was skipped.

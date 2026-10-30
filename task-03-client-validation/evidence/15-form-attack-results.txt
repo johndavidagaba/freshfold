@@ -1,0 +1,20 @@
+# Attacking my own signup form through the browser (Fri 30 Oct 2026, ~09:53 WAT), /account?form=signup
+
+## Inputs that GOT THROUGH (Create account button became active, screenshot 15-form-attack-junk-accepted.png)
+Full name:  Test User                 -> accepted (an obvious fake name; letters and a space are all the rule asks for)
+Email:      a@b.co                    -> accepted (two-letter domain, nobody's real address; the format rule only checks shape)
+Phone:      0801 234 5678             -> accepted (spaces are stripped, then 11 digits starting 080: valid shape, nobody's real number)
+Password:   aaaaaaaaaaaa (12 x "a")   -> accepted (length is the only rule, so twelve identical letters pass)
+Terms:      ticked
+
+## Inputs that were BLOCKED earlier in this task (evidence 05-08)
+Full name "a"              -> "Use letters only, 2 to 60 characters."
+Full name empty            -> "Add your name so we can tag your bag."
+Email "david@"             -> "That doesn't look like an email address." (real time on signup)
+Phone 8012345679           -> "Enter a Nigerian mobile number, e.g. 080..."
+Password of spaces         -> blocked by the "not only spaces" rule; the server accepted "   " directly (evidence 16)
+
+## Conclusion
+The form stops typos and lazy junk ("a", "test", missing @). It does not stop a fake but well-shaped identity:
+"Test User", a@b.co, a made-up 080 number and a 12-letter password of one repeated character all pass.
+Shape rules cannot tell real from fake. Only proving ownership can: an email code, an SMS code to the phone (Task 4).

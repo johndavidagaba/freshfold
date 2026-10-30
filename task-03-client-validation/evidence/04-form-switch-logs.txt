@@ -1,0 +1,33 @@
+# Server log while switching between forms on /account (Wed 28 Oct 2026, Next.js 15.3.9 dev server)
+
+## Before collapsing: three separate pages, each a full page request
+ GET /signup 200 in 1705ms
+ GET /login 200 in 907ms
+ GET /reset-password 200 in 756ms
+(after deletion, the old routes return 404: GET /reset-password 404 in 2953ms)
+
+## Version 1: agent's collapse using Next.js <Link replace>, ~20:22 WAT
+## Typed in the address bar (expected to load):
+ GET /account?form=signup 200 in 1382ms
+ GET /account?form=login 200 in 26ms
+ GET /account?form=reset 200 in 31ms
+## Then CLICKED Log in -> Create an account -> Log in -> Reset password:
+ GET /account?form=login 200 in 24ms
+ GET /account?form=signup 200 in 33ms
+ GET /account?form=login 200 in 22ms
+ GET /account?form=reset 200 in 35ms
+
+# Finding: the agent said "switching does not reload the page". The browser did not do a full reload,
+# but every click still made a request to the server (one GET per switch), because changing the
+# query string through the Next.js router re-requests the route from the server.
+
+## Version 2: form held in React state, links call preventDefault + window.history.replaceState, ~20:28 WAT
+## Pressed F5 once (a real page load, expected):
+ GET /account?form=reset 200 in 383ms
+## Then CLICKED Create an account -> Log in -> Reset password (address bar changed each time:
+## ?form=signup, ?form=login, ?form=reset). Server log after the clicks, checked ~20:44 WAT:
+ (no new lines; the last line is still GET /account?form=reset 200 in 383ms)
+
+# Result: switching forms now makes zero server requests and no page reload.
+# The URL still records which form is open, so the link can be shared or bookmarked.
+# Cost accepted: the browser Back button does not switch the form back (replaceState, not pushState).
