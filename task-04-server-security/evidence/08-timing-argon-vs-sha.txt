@@ -1,0 +1,20 @@
+# Hashing time on my own laptop (Windows, Node.js), Fri 30 Oct 2026 ~16:46 WAT
+PS C:\Project\freshfold> node scripts/hash-timing.mjs
+Argon2id average: 21.57 ms/hash (46.35 guesses/second)
+SHA-256 average: 1.871 microseconds/hash (534473.54 guesses/second)
+Ratio (SHA-256 / Argon2id guesses/second): 11530.13x
+
+## The arithmetic (one CPU core, the same core for both)
+Argon2id: 21.57 ms per hash  -> 1000 ms / 21.57 ms        = 46.36 guesses per second
+SHA-256:  1.871 µs per hash   -> 1,000,000 µs / 1.871 µs   = 534,474 guesses per second
+Ratio:    534,474 / 46.36                                  = about 11,530 times more guesses with SHA-256
+
+## What that means for one stolen password, on this one core
+A list of 10 million leaked passwords:
+  SHA-256:   10,000,000 / 534,474 = about 19 seconds
+  Argon2id:  10,000,000 / 46.36   = about 215,700 seconds = about 60 hours (2.5 days)
+And Argon2id needs 19 MiB of memory per guess, which limits how many guesses a GPU can run in parallel;
+SHA-256 needs almost none, so a GPU runs billions per second. My laptop numbers understate SHA-256's real speed for an attacker.
+
+## Cost to FreshFold
+One login = one hash = 21.57 ms. A customer cannot notice 0.02 seconds.

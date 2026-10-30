@@ -1,0 +1,44 @@
+# Signup request timing, BEFORE and AFTER adding schema validation (zod)
+# Same request each time, sent 5 times with curl.exe from PowerShell, dev server (next dev) on my laptop.
+# Body: {"name":"Ada Obi","email":"ada@example.com","phone":"08012345678","password":"long-enough-pass","terms":true}
+
+## BEFORE: /api/signup with no validation at all (echoes the body), Fri 30 Oct 2026 ~16:28 WAT
+PS C:\Project\freshfold> 1..5 | ForEach-Object { curl.exe -s -o NUL -w "%{http_code} %{time_total}s`n" -X POST http://localhost:3000/api/signup -H "Content-Type: application/json" --data-binary "@body.json" }
+201 1.244346s   <- first request: the route is compiled on demand in dev mode
+201 0.019175s
+201 0.011792s
+201 0.010107s
+201 0.010359s
+# Warm average of requests 2-5: (19.2 + 11.8 + 10.1 + 10.4) / 4 = 12.9 ms
+
+## AFTER: /api/signup with rate limit (DB) + zod schema + breach check (HIBP) + Argon2id + database insert, ~16:52 WAT
+# 5 different valid signups (ada1..ada5@example.com) so each one is a real 201, not a 409.
+PS C:\Project\freshfold> 1..5 | ForEach-Object { '{"name":"Ada Obi","email":"ada' + $_ + '@example.com",...}' | Out-File -Encoding ascii b.json; curl.exe -s -w " -> %{http_code} %{time_total}s`n" -X POST http://localhost:3000/api/signup -H "Content-Type: application/json" --data-binary "@b.json" }
+{"id":"cmvv5huvv0000v8p4vqc0x9pz","email":"ada1@example.com"} -> 201 2.896585s   <- includes compiling the new route
+{"id":"cmvv5hw7t0001v8p40e6nbb1n","email":"ada2@example.com"} -> 201 1.434512s
+{"id":"cmvv5hx1r0002v8p4rnfpy7pq","email":"ada3@example.com"} -> 201 0.938912s
+{"id":"cmvv5hxuc0003v8p4whiueov6","email":"ada4@example.com"} -> 201 0.907721s
+{"error":"Too many attempts. Try again in 11 minutes."} -> 429 0.162242s   <- rate limit (see evidence 13)
+
+# Warm signups 2-4: (1434 + 939 + 908) / 3 = about 1,094 ms, against 12.9 ms before: about 85 times slower.
+
+## WHERE THE TIME WENT: the route's own stage log (dev server terminal)
+[signup] parse 5ms validate 8ms breach 1094ms hash 74ms db 803ms total 2782ms   POST /api/signup 201 in 2882ms
+[signup] parse 1ms validate 2ms breach 308ms  hash 81ms db 724ms total 1415ms   POST /api/signup 201 in 1431ms
+[signup] parse 1ms validate 0ms breach 215ms  hash 80ms db 301ms total 923ms    POST /api/signup 201 in 936ms
+[signup] parse 1ms validate 0ms breach 206ms  hash 87ms db 302ms total 879ms    POST /api/signup 201 in 899ms
+ POST /api/signup 429 in 161ms
+
+# total also includes the rate-limit check, which is not listed as a stage:
+# e.g. 879 - (1 + 0 + 206 + 87 + 302) = 283 ms spent on the rate limiter's database reads and writes.
+
+## My number and what causes it
+The validation library itself costs 0-8 ms (the 8 ms was the first call). It is NOT the cause.
+The ~0.9 s warm signup is almost all network:
+- breach check:   ~206-308 ms warm: an HTTPS request from Lagos to the Have I Been Pwned API
+- database:       ~300 ms: checking the email exists + inserting the user, round trips to Neon in London (eu-west-2)
+- rate limiter:   ~280 ms: more round trips to the same London database, to read and update the counter
+- Argon2id hash:  ~80 ms in the dev server (21.57 ms in the standalone script; the dev server shares the CPU with compiling)
+So the delay comes from three trips out of the country per signup, not from checking the request's shape.
+Fixes I would consider: a database region nearer Lagos, keeping rate-limit counters in memory or a fast store,
+running the breach check in parallel with the email lookup. I have not made these changes.

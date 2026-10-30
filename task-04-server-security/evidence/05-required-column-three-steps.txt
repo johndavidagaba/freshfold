@@ -1,0 +1,30 @@
+# Adding the required column in three steps (Fri 30 Oct 2026, 15:59-16:03 WAT), all run by hand
+
+## Step A: add it as OPTIONAL (schema: status String?)
+PS C:\Project\freshfold> npx.cmd prisma migrate dev --name add_pickup_status_optional
+Datasource "db": PostgreSQL database "neondb", schema "public" at "ep-twilight-haze-zacodebv.c-2.eu-west-2.aws.neon.tech"
+Applying migration `20261030145938_add_pickup_status_optional`
+The following migration(s) have been created and applied from new schema changes:
+prisma\migrations/
+  └─ 20261030145938_add_pickup_status_optional/
+    └─ migration.sql
+Your database is now in sync with your schema.
+✔ Generated Prisma Client (v6.19.3) to .\node_modules\@prisma\client in 176ms
+
+## Step B: FILL the existing rows
+PS C:\Project\freshfold> 'UPDATE "PickupRequest" SET "status" = ''requested'' WHERE "status" IS NULL;' | npx.cmd prisma db execute --stdin --schema prisma/schema.prisma
+Script executed successfully.
+
+## Step C: make it REQUIRED (schema: status String @default("requested"))
+PS C:\Project\freshfold> npx.cmd prisma migrate dev --name make_pickup_status_required
+Datasource "db": PostgreSQL database "neondb", schema "public" at "ep-twilight-haze-zacodebv.c-2.eu-west-2.aws.neon.tech"
+Applying migration `20261030150248_make_pickup_status_required`
+The following migration(s) have been created and applied from new schema changes:
+prisma\migrations/
+  └─ 20261030150248_make_pickup_status_required/
+    └─ migration.sql
+Your database is now in sync with your schema.
+✔ Generated Prisma Client (v6.19.3) to .\node_modules\@prisma\client in 116ms
+
+# The default "requested" is for NEW rows: the schedule form does not send a status yet, so without a default
+# every new booking would fail. Existing rows were filled explicitly in step B rather than relying on the default.

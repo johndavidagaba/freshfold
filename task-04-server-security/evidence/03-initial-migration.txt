@@ -1,0 +1,22 @@
+# Initial Task 4 migration, run BY HAND (the agent was told not to run Prisma commands), Fri 30 Oct 2026 ~15:55 WAT
+
+PS C:\Project\freshfold> npx.cmd prisma migrate dev --name task4_core_tables
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "neondb", schema "public" at "ep-twilight-haze-zacodebv.c-2.eu-west-2.aws.neon.tech"
+
+Applying migration `20261030145503_task4_core_tables`
+
+The following migration(s) have been created and applied from new schema changes:
+
+prisma\migrations/
+  └─ 20261030145503_task4_core_tables/
+    └─ migration.sql
+
+Your database is now in sync with your schema.
+
+✔ Generated Prisma Client (v6.19.3) to .\node_modules\@prisma\client in 307ms
+
+(Prisma also printed "Update available 6.19.3 -> 8.0.0-rc.29". Ignored on purpose: Prisma 7 already broke this project's schema in Task 2, and an rc is a pre-release.)
+
+# Tables added: User, Session, VerificationCode, Payment, PaymentAttempt, KnowledgeChunk, RateLimit.

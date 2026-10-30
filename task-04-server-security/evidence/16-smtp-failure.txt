@@ -1,0 +1,31 @@
+# SMTP failures, Fri 30 Oct 2026. Host smtp.gmail.com, port 465 (implicit TLS, secure: true), user = my Gmail address (redacted here as j***@gmail.com)
+
+## Failure 1 (~18:44 WAT): the settings never reached the app
+# I added the SMTP lines to .env in Notepad but the save did not happen; .env contained only DATABASE_URL.
+# EMAIL_MODE was therefore unset, so the app used background mode:
+[signup] parse 35ms validate 5ms breach 1314ms hash 32ms db 789ms email 2ms (background) total 5060ms
+ POST /api/signup 201 in 7399ms
+Error: SMTP environment variables are not configured
+    at sendVerificationEmail (lib\mailer.ts:18:12)
+[signup] background verification email failed Error: SMTP environment variables are not configured
+# The customer got 201 "account created" and no email ever arrived. Only the server log knew.
+# Fix: added the lines with PowerShell Add-Content, checked the NAMES only (never the values), restarted the server.
+
+## Failure 2 (~20:45 WAT): Google rejected the login (deliberately wrong password, EMAIL_MODE="sync")
+PS C:\Project\freshfold> ...curl.exe -sS -w " -> %{http_code} %{time_total}s`n" -X POST http://localhost:3000/api/signup ... (email j***+ff2@gmail.com)
+ -> 500 14.837188s
+
+# Dev server log:
+ [Error: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials ... - gsmtp] {
+  code: 'EAUTH',
+  response: '535-5.7.8 Username and Password not accepted. ...',
+  responseCode: 535,
+  permanent: true,
+  command: 'AUTH PLAIN'
+}
+ POST /api/signup 500 in 14813ms
+
+# Gmail requires an APP PASSWORD (16 letters, created under Google Account > App passwords, which needs 2-Step
+# Verification turned on). An ordinary account password, or a wrong one, gets 535 BadCredentials.
+# In sync mode the user waited 14.8 s for a 500, and the account had already been created before the email failed.

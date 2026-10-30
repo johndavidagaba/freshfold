@@ -1,0 +1,14 @@
+# Adding a REQUIRED column to a populated table (Fri 30 Oct 2026 ~15:57 WAT)
+# Schema change: PickupRequest gets `status String` (required, no default). The table has 5 rows.
+
+PS C:\Project\freshfold> npx.cmd prisma migrate dev --name add_pickup_status
+Error:
+⚠️ We found changes that cannot be executed:
+
+  • Step 0 Added the required column `status` to the `PickupRequest` table without a default value. There are 5 rows in this table, it is not possible to execute this step.
+
+You can use prisma migrate dev --create-only to create the migration file, and manually modify it to address the underlying issue(s).
+Then run prisma migrate dev to apply it and verify it works.
+
+# Why: a NOT NULL column needs a value in every existing row. The 5 existing pickups have none, so PostgreSQL
+# cannot add it, and Prisma refuses before touching the database. Nothing was applied.

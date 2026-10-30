@@ -1,0 +1,8 @@
+# Same password hashed twice with Argon2id (@node-rs/argon2, defaults), Fri 30 Oct 2026 ~16:46 WAT, my laptop
+PS C:\Project\freshfold> node scripts/hash-timing.mjs
+Argon2id hash 1: $argon2id$v=19$m=19456,t=2,p=1$+b/mbrRsjRbY8EX6o1I5dw$av8qw764xl8lP6TCY5J5dRqFsa0Cot8pfc9tAYwCawc
+Argon2id hash 2: $argon2id$v=19$m=19456,t=2,p=1$UEFaJwALEWsUXV3pM2Zd/A$WH0nn2heDJLgc7kxirFHjsPp17urwQbLT1b2ia+Kl88
+
+# Password both times: "correct-horse-battery".
+# They differ because each hash gets a new random salt (the part after p=1$, before the next $), and the salt is mixed into the hash.
+# Parameters stored in the hash itself: m=19456 KiB (19 MiB memory), t=2 passes, p=1 lane.
