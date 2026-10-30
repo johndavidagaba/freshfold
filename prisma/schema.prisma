@@ -14,6 +14,7 @@ model PickupRequest {
   address      String
   pickupDate   DateTime
   itemCount    Int?
+  notes        String?
   status       String   @default("requested")
   createdAt    DateTime @default(now())
 }
