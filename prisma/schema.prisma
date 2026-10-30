@@ -14,5 +14,93 @@ model PickupRequest {
   address      String
   pickupDate   DateTime
   itemCount    Int?
+  status       String   @default("requested")
   createdAt    DateTime @default(now())
+}
+
+model User {
+  id                String             @id @default(cuid())
+  name              String
+  email             String             @unique
+  phone             String
+  passwordHash      String
+  emailVerifiedAt   DateTime?
+  termsAcceptedAt   DateTime
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  sessions          Session[]
+  verificationCodes VerificationCode[]
+  payments          Payment[]
+  paymentAttempts   PaymentAttempt[]
+}
+
+model Session {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String    @unique
+  createdAt  DateTime  @default(now())
+  expiresAt  DateTime
+  lastSeenAt DateTime  @default(now())
+  revokedAt  DateTime?
+  userAgent  String?
+
+  @@index([userId])
+}
+
+model VerificationCode {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash  String
+  expiresAt DateTime
+  usedAt    DateTime?
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  amountKobo  Int
+  currency    String   @default("NGN")
+  provider    String
+  providerRef String   @unique
+  status      String
+  paidAt      DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+}
+
+model PaymentAttempt {
+  id            String   @id @default(cuid())
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id])
+  amountKobo    Int
+  currency      String   @default("NGN")
+  provider      String
+  providerRef   String?
+  outcome       String
+  failureReason String?
+  createdAt     DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model KnowledgeChunk {
+  id        String   @id @default(cuid())
+  source    String
+  content   String
+  embedding Float[]
+  createdAt DateTime @default(now())
+}
+
+model RateLimit {
+  key         String   @id
+  count       Int
+  windowStart DateTime
 }
