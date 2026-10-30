@@ -89,6 +89,46 @@
   border-color: var(--color-primary);
 }
 
+.passwordRow {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.passwordInput {
+  flex: 1;
+  width: auto;
+  min-width: 0;
+}
+
+.toggleButton {
+  padding: 0 14px;
+  border-radius: 8px;
+  color: var(--color-on-surface);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-outline);
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.toggleButton:hover {
+  background-color: var(--color-surface-container);
+  border-color: var(--color-primary);
+}
+
+.toggleButton:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.error {
+  color: var(--color-error);
+}
+
+.hint {
+  color: var(--color-on-surface-variant);
+}
+
 .button {
   padding: 0.75rem 1.5rem;
   border-radius: 0.75rem;
