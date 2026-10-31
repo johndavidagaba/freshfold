@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./page.module.css";
 
 type FormKind = "signup" | "login" | "reset" | "verify";
@@ -446,6 +446,7 @@ function SignupForm({ onSuccess }: { onSuccess: (email: string) => void }) {
 }
 
 function LoginForm() {
+  const router = useRouter();
   const [errors, setErrors] = useState({
     email: "",
     password: "",
@@ -486,7 +487,7 @@ function LoginForm() {
     const data = (await response.json()) as ApiErrorResponse;
 
     if (response.ok) {
-      console.log("valid");
+      router.push("/dashboard");
       return;
     }
 
@@ -739,6 +740,7 @@ function VerifyForm({ email }: { email: string }) {
 }
 
 function AccountForms() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [activeForm, setActiveForm] = useState<FormKind>(() =>
     resolveForm(searchParams.get("form"))
@@ -775,8 +777,7 @@ function AccountForms() {
           <SignupForm
             onSuccess={(email) => {
               setVerifyEmail(email);
-              setActiveForm("verify");
-              window.history.replaceState(null, "", "/account?form=verify");
+              router.push("/dashboard");
             }}
           />
         )}

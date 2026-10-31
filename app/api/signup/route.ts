@@ -4,6 +4,7 @@ import { sendVerificationEmail } from "@/lib/mailer";
 import { hashPassword } from "@/lib/password";
 import { prisma } from "@/lib/prisma";
 import { getClientIp, limit } from "@/lib/rateLimit";
+import { createSession } from "@/lib/session";
 import { signupSchema } from "@/lib/validation";
 import { createCode } from "@/lib/verification";
 
@@ -94,6 +95,7 @@ export async function POST(request: Request) {
       termsAcceptedAt: new Date(),
     },
   });
+  await createSession(user.id, request.headers.get("user-agent"));
   const verificationCode = await createCode(user.id);
   const dbMs = performance.now() - dbStart;
   const emailMode =

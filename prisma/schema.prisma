@@ -20,19 +20,23 @@ model PickupRequest {
 }
 
 model User {
-  id                String             @id @default(cuid())
-  name              String
-  email             String             @unique
-  phone             String
-  passwordHash      String
-  emailVerifiedAt   DateTime?
-  termsAcceptedAt   DateTime
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  sessions          Session[]
-  verificationCodes VerificationCode[]
-  payments          Payment[]
-  paymentAttempts   PaymentAttempt[]
+  id                  String             @id @default(cuid())
+  name                String
+  email               String             @unique
+  phone               String
+  passwordHash        String
+  emailVerifiedAt     DateTime?
+  role                String             @default("customer")
+  bannedAt            DateTime?
+  deletionRequestedAt DateTime?
+  purgeAfter          DateTime?
+  termsAcceptedAt     DateTime
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  sessions            Session[]
+  verificationCodes   VerificationCode[]
+  payments            Payment[]
+  paymentAttempts     PaymentAttempt[]
 }
 
 model Session {
