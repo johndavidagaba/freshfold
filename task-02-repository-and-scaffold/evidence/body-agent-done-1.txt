@@ -1,0 +1,74 @@
+Created schema.prisma
+Ran command: `npx.cmd prisma migrate dev --name make_item_count_optional`
+Used tool: schedule
+
+Waiting for migration to complete.
+
+Used tool: manage_task
+Viewed task-372.log
+Used tool: schedule
+
+Waiting for Prisma migration to complete.
+
+Used tool: manage_task
+Used tool: schedule
+
+Waiting for migration to complete.
+
+Created actions.ts
+Created page.module.css
+Created page.tsx
+Created page.tsx
+Created page.module.css
+Ran command: `git status --short`
+
+The redesign of `/schedule` and the homepage button updates are complete.
+
+---
+
+### What Was Done
+
+1. **Prisma Model & Migration:**
+   - Updated `itemCount` in [prisma/schema.prisma](file:///c:/Project/freshfold/prisma/schema.prisma) to be optional (`Int?`).
+   - Executed the approved migration `npx prisma migrate dev --name make_item_count_optional`, which generated and applied `20261027142135_make_item_count_optional` to Neon PostgreSQL and refreshed the client.
+   - Updated [app/schedule/actions.ts](file:///c:/Project/freshfold/app/schedule/actions.ts) so it no longer expects or reads `itemCount`.
+
+2. **Pickup Date & Window Selection:**
+   - Replaced the datetime-local picker with a native date input and three pickup window buttons: `"Morning (8–12)"`, `"Afternoon (12–4)"`, and `"Evening (4–7)"`.
+   - Set up the form with no pre-selected window. If submitted without selecting a window, client-side interception displays `"Please choose a pickup window."` directly beneath the window buttons while preserving all other typed inputs.
+   - [app/schedule/actions.ts](file:///c:/Project/freshfold/app/schedule/actions.ts) parses the chosen date and window start time in Lagos timezone (`08:00:00+01:00`, `12:00:00+01:00`, or `16:00:00+01:00`) and saves it as `pickupDate`.
+
+3. **Header & Heading:**
+   - Added a header at the top of `/schedule` linking to `"/"` with the 32px FreshFold logo (`/icon.png`, alt: `"FreshFold home"`) and the brand name `"FreshFold"`.
+   - Changed the page heading to `"Book a pickup. We count every item."` using the `type-headline-large` style with no `max-width`.
+
+4. **Button Styling & Hover States:**
+   - Styled the three window buttons and `"Request pickup"` using `padding: 0.75rem 1.5rem` and `border-radius: 0.75rem` (no fixed widths or heights).
+   - Applied the `Label Large` typography style (`type-label-large`) from [task-01-design-system/docs/type-scale.md](file:///c:/Project/freshfold/task-01-design-system/docs/type-scale.md).
+   - Provided `cursor: pointer` and visible hover states using only design-system tokens (`var(--color-surface-container)`, `var(--color-primary)`, `var(--color-surface-tint)`).
+
+5. **Home Page Update:**
+   - Converted the `"Schedule pickup"` button on [app/page.tsx](file:///c:/Project/freshfold/app/page.tsx) into a Next.js `<Link href="/schedule">` with the same `0.75rem 1.5rem` padding, `0.75rem` border-radius, `cursor: pointer`, and token-based hover state.
+
+No build commands were run, leaving your running dev server completely intact.
+
+---
+
+### Files Created or Changed
+
+**Created:**
+- `prisma/migrations/20261027142135_make_item_count_optional/migration.sql`
+
+**Changed:**
+- [prisma/schema.prisma](file:///c:/Project/freshfold/prisma/schema.prisma) (made `itemCount` optional)
+- [app/schedule/actions.ts](file:///c:/Project/freshfold/app/schedule/actions.ts) (removed `itemCount`, added window start time logic in Lagos time)
+- [app/schedule/page.tsx](file:///c:/Project/freshfold/app/schedule/page.tsx) (header with logo, new heading, date picker, window buttons, validation state)
+- [app/schedule/page.module.css](file:///c:/Project/freshfold/app/schedule/page.module.css) (window button states, rem-based button padding/radius, header styles)
+- [app/page.tsx](file:///c:/Project/freshfold/app/page.tsx) (turned button into a link to `/schedule`)
+- [app/page.module.css](file:///c:/Project/freshfold/app/page.module.css) (rem-based button padding, radius, and hover state)
+
+---
+
+### Assumptions Made
+1. Lagos is in West Africa Time (`UTC+1`). The window start times are mapped to `08:00:00+01:00`, `12:00:00+01:00`, and `16:00:00+01:00`.
+2. Intercepting form submission when no window is selected allows immediate feedback next to the window buttons while keeping all typed form values intact without resetting the inputs.

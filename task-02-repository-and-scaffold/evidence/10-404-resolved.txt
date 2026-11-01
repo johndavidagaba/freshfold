@@ -1,0 +1,47 @@
+Task 2, step 5: diagnosing and resolving the 404
+Machine: C:\Project\freshfold, Windows PowerShell, 26 Oct 2026, 17:00-17:31.
+
+The failure (09-404-error.txt): GET /schedule 404 in 5773ms.
+
+What I checked, in order, before asking any agent for help:
+
+1. Is the server running?
+   Yes. The terminal logged the request and answered 404. If the server were down, Chrome would show
+   "This site can't be reached" and nothing would be logged.
+
+2. What did the server try to build?
+   The log said "Compiling /_not-found", not "Compiling /schedule". Next.js compiled its fallback page,
+   which means it found no route called /schedule.
+
+3. Does the route exist?
+   In Next.js App Router, each page is a folder inside app/ containing page.tsx.
+   PS C:\Project\freshfold> dir app
+   Result: globals.css, layout.tsx, page.module.css, page.tsx. No schedule folder.
+   (Screenshot: 10-404-diagnosis-dir-app.png)
+
+Conclusion: nothing was broken. The route had never been created.
+
+The fix:
+I asked OpenCode to create a placeholder, but its free models (DeepSeek V4.1 Flash, then GLM-5.3 Flash)
+had both hit the free usage limit ("retrying in 7h 48m"). So I created it by hand in Antigravity:
+new folder app/schedule, new file app/schedule/page.tsx, with a heading "Schedule a pickup" and the
+line "Coming soon.", styled only with design-system classes and var(--color-...) values.
+
+What the log showed while I did it (transcribed from 10-404-resolved-terminal.png):
+
+ GET /schedule 500 in 493ms
+ ⨯ [Error: The default export is not a React Component in "/schedule/page"] {
+   page: '/schedule'
+ }
+ GET /schedule 500 in 462ms
+ ✓ Compiled in 107ms (54 modules)
+ ✓ Compiled /schedule in 424ms (399 modules)
+ GET /schedule 200 in 796ms
+
+The two 500 errors happened while app/schedule/page.tsx existed but was still empty: my first paste
+failed because a screenshot was on the clipboard. An empty page file is worse than a missing one: the
+route exists, so instead of a 404 the server crashes with a 500 (Internal Server Error). Once the code was
+saved, the same URL returned 200.
+
+Result: GET /schedule 200 in 796ms. Page shows "Schedule a pickup / Coming soon." in the FreshFold
+font and surface colour (10-404-resolved-browser.png).

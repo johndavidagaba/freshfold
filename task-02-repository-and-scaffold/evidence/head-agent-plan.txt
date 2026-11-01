@@ -1,0 +1,64 @@
+Viewed layout.tsx:1-29
+Viewed page.tsx:1-21
+
+Here is my plan for improving the page head metadata without changing any page visual design or touching `.next`:
+
+---
+
+### One-Line Explanations of SEO & Metadata Tags
+
+**Home Page SEO Tags (`app/page.tsx`):**
+- **`title: "Laundry pickup in Yaba"`**: Defines the browser tab title and search result headline, combining with the root template to display as `"Laundry pickup in Yaba · FreshFold"`.
+- **`description`**: Emits `<meta name="description">` providing search engine crawlers with the snippet text to display under the search result link.
+- **`robots: { index: true, follow: true }`**: Emits `<meta name="robots" content="index, follow">`, explicitly instructing search engines to index the homepage and crawl its links.
+- **`alternates: { canonical: "/" }`**: Emits `<link rel="canonical" href="/">`, establishing the definitive master URL to prevent duplicate content ranking penalties.
+
+**Social / Open Graph Tags (`app/layout.tsx`):**
+- **`metadataBase: new URL("http://localhost:3000")`**: Sets the root origin URL required by Next.js to resolve relative asset paths and canonical links.
+- **`openGraph.title` & `openGraph.description`**: Emit `og:title` and `og:description` for social cards when links are shared on messaging apps (e.g., WhatsApp) and social networks.
+- **`openGraph.type: "website"`**: Emits `<meta property="og:type" content="website">` declaring the object type to social graph scrapers.
+- **`openGraph.siteName: "FreshFold"`**: Emits `<meta property="og:site_name" content="FreshFold">` showing the brand identity in preview cards.
+- **`openGraph.locale: "en_NG"`**: Emits `<meta property="og:locale" content="en_NG">` indicating English (Nigeria).
+- **`twitter.card: "summary_large_image"`**: Emits `<meta name="twitter:card" content="summary_large_image">` telling Twitter/X to render a full-width visual card preview.
+
+---
+
+### Implementation Plan
+
+1. **Root Layout Metadata ([app/layout.tsx](file:///c:/Project/freshfold/app/layout.tsx)):**
+   - Configure `title`: `{ default: "FreshFold · Laundry pickup in Yaba", template: "%s · FreshFold" }`.
+   - Set `description`: `"Every item counted, from pickup to your door."` (8 words).
+   - Set `metadataBase`: `new URL("http://localhost:3000")`.
+   - Add `openGraph`: `{ title: "FreshFold · Laundry pickup in Yaba", description: "Every item counted, from pickup to your door.", type: "website", siteName: "FreshFold", locale: "en_NG" }`.
+   - Add `twitter`: `{ card: "summary_large_image" }`.
+
+2. **Home Page Metadata ([app/page.tsx](file:///c:/Project/freshfold/app/page.tsx)):**
+   - Export `metadata: Metadata` with:
+     - `title: "Laundry pickup in Yaba"`
+     - `description: "FreshFold collects your laundry in Yaba, Lagos, records every item, and brings it back clean."`
+     - `robots: { index: true, follow: true }`
+     - `alternates: { canonical: "/" }`
+   - No keywords tag.
+
+3. **Schedule Page Metadata ([app/schedule/layout.tsx](file:///c:/Project/freshfold/app/schedule/layout.tsx)):**
+   - Because `app/schedule/page.tsx` is a Client Component (`"use client"`), create a lightweight server layout `app/schedule/layout.tsx` (in the existing `app/schedule` directory, no new folders) that exports:
+     ```typescript
+     export const metadata: Metadata = {
+       title: "Schedule a pickup",
+     };
+     ```
+     This resolves to `"Schedule a pickup · FreshFold"` via the title template.
+
+4. **No Build Step:**
+   - I will **not** run `npm run build` or any command that writes to `.next` to avoid interfering with your running dev server.
+   - I will **not** create any images (`app/opengraph-image.png`) or icons (`app/icon.png`).
+
+---
+
+### Files Created or Changed
+- **None.** Awaiting your approval before making changes.
+
+### Assumptions Made
+- The schedule page title is best provided via a server `app/schedule/layout.tsx` wrapper in the existing folder, allowing `app/schedule/page.tsx` to retain its client-side React 19 form hooks without being altered.
+
+I am paused and waiting for your approval before writing any code.

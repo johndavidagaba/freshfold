@@ -1,0 +1,28 @@
+﻿*   5f21071 2026-10-28  (HEAD -> main, origin/main, origin/HEAD) Merge pull request #2 from johndavidagaba/feature/head-and-information-design
+|\  
+| * ebf3265 2026-10-28  Use type-label-large class on all schedule buttons instead of copied font variables
+| * a4df88f 2026-10-27  Make schedule heading responsive with clamp between Headline Small and Headline Large
+| * aac3522 2026-10-27  Redesign schedule screen: remove item count, add pickup windows, logo header, heading max-width, rem buttons
+| * 6cd7dba 2026-10-27  Add Open Graph preview image (1200x630) made in Figma
+| * 918c758 2026-10-27  Add FreshFold favicon made in Figma (512px, Laundry Blue F)
+| * 898d8eb 2026-10-27  Add page titles per route, tagline, home-only SEO tags and Open Graph metadata
+|/  
+*   1a8242c 2026-10-26  Merge pull request #1 from johndavidagaba/docs/main-readme
+|\  
+| * 6327de4 2026-10-26  Add main README: status, stack with reasons, setup, env vars, scope, known defects
+|/  
+* 67c0064 2026-10-26  Add pickup request form, Prisma model and migration, write/fail/recover evidence and false-success note
+* 3036bb3 2026-10-26  Reproduce and fix nested project folder two ways: cd and agent clean-up
+* 1cc22af 2026-10-26  Diagnose /schedule 404 and add placeholder schedule page by hand
+* 893d950 2026-10-26  Record first load timing and port conflict diagnosis for Task 2
+* 6e4e149 2026-10-26  Scaffold Next.js app with Prisma; pin Prisma 6.19.3 after Prisma 7 schema failed validation
+* 68621e9 2026-10-26  Add AGENTS.md context file and Task 2 scaffold prompt
+* f86368f 2026-10-25  Add Task 1 README, divergences, defects and interview answers
+* 679a2ee 2026-10-25  Add Task 1 evidence, regression write-up and full prompt log
+* f87692b 2026-10-25  Build order status screen with design system; fix balance type style and plan card layout
+* 2e29533 2026-10-25  Add tokens-to-css script and generated CSS variables from Figma tokens
+* ec1718b 2026-10-23  Add Task 1 design system: brief, colour roles, type scale, shadows and token exports
+
+
+Deleted without merging (not in the graph above): experiment/green-request-button, commit 691e1e9 'Try green success colour on Request pickup button', removed with git branch -D on 2026-10-28. Rejected: green means done in this design system, and the hover became invisible.
+Pull requests: https://github.com/johndavidagaba/freshfold/pull/1 and https://github.com/johndavidagaba/freshfold/pull/2

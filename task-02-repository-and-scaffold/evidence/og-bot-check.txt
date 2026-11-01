@@ -1,0 +1,11 @@
+# Does a link-preview bot get the Open Graph tags inside <head>? (Tue 27 Oct 2026 ~15:13 WAT)
+# Next.js 15 streams metadata into the body for normal browsers, but should render it in <head> for known bots.
+
+PS C:\Project\freshfold> $h = (curl.exe -s -A "WhatsApp/2.23" http://localhost:3000) -join "`n"; "og:image inside head for WhatsApp: " + ($h.IndexOf('og:image') -lt $h.IndexOf('</head>'))
+og:image inside head for WhatsApp: True
+
+PS C:\Project\freshfold> $h = (curl.exe -s -A "Mozilla/5.0 Chrome/130" http://localhost:3000) -join "`n"; "og:image inside head for Chrome: " + ($h.IndexOf('og:image') -lt $h.IndexOf('</head>'))
+og:image inside head for Chrome: False
+
+# Same page, same server: the WhatsApp bot gets the tags in <head>, an ordinary browser gets them streamed later in <body>.
+# Lesson: checking only document.head in the browser would have wrongly reported the tags as missing.

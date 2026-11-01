@@ -1,0 +1,22 @@
+Task 2, step 5: a 404
+Machine: C:\Project\freshfold, Windows PowerShell, 26 Oct 2026 about 17:00.
+Server: npm.cmd run dev (Next.js 15.3.9, port 3000), started after the port-conflict fix.
+Request: Chrome, http://localhost:3000/schedule
+
+Server terminal (transcribed from 09-404-terminal.png):
+
+   Γû▓ Next.js 15.3.9
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.6:3000
+
+ Γ£ô Starting...
+ Γ£ô Ready in 3.9s
+ Γùï Compiling /_not-found ...
+ Γ£ô Compiled /_not-found in 4.9s (655 modules)
+ GET /schedule 404 in 5773ms
+
+Status code: 404 (Not Found). Time: 5,773 ms.
+Browser showed Next.js's default page: "404 | This page could not be found." (09-404-browser.png),
+in black and white, not FreshFold's design.
+Note: the server compiled a page called /_not-found, not /schedule. That is the first clue that no
+schedule route exists.

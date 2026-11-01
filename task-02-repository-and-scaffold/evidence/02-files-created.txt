@@ -1,0 +1,163 @@
+Task 2, step 2: the agent's full work log and final report after approval.
+Agent: Antigravity, Gemini 3.8 Flash Medium, 26 Oct 2026. Copied from the agent panel; unchanged below this header.
+
+Ran command: `node -e "
+const { execSync } = require('child_process');
+const pkgs = ['next', 'react', 'react-dom', 'typescript', '@types/node', '@types/react', '@types/react-dom', 'prisma', '@prisma/client'];
+const versions = {};
+for (const p of pkgs) {
+  try {
+    versions[p] = execSync('npm.cmd view ' + p + ' version', { encoding: 'utf8' }).trim();
+  } catch(e) {
+    versions[p] = 'error';
+  }
+}
+console.log(JSON.stringify(versions, null, 2));
+"`
+Used tool: manage_task
+
+The version check is running in the background; I will continue as soon as it completes.
+
+Used tool: manage_task
+Used tool: schedule
+
+I am waiting for the package version check to finish.
+
+Used tool: manage_task
+Used tool: schedule
+
+Waiting for the version query to complete.
+
+Ran command: `node -e "
+const { execSync } = require('child_process');
+console.log('next dist-tags:', execSync('npm.cmd view next dist-tags', { encoding: 'utf8' }).trim());
+console.log('prisma dist-tags:', execSync('npm.cmd view prisma dist-tags', { encoding: 'utf8' }).trim());
+console.log('react dist-tags:', execSync('npm.cmd view react dist-tags', { encoding: 'utf8' }).trim());
+"`
+Used tool: schedule
+
+I will wait for the dist-tags check to return.
+
+Ran command: `npm.cmd view prisma@7.10.1 version`
+Used tool: schedule
+Ran command: `npm.cmd view next@15.3.9 peerDependencies`
+Used tool: schedule
+Ran command: `npm.cmd view typescript@5.7.3 version`
+Used tool: schedule
+Created package.json
+Created .env.example
+Created .gitignore
+Ran command: `npm.cmd install`
+Created tsconfig.json
+Created next.config.ts
+Created schema.prisma
+Created globals.css
+Created layout.tsx
+Viewed order-status.html:1-100
+Viewed order-status.html:170-250
+Viewed order-status.html:250-320
+Used tool: manage_task
+Created globals.css
+Created page.module.css
+Created page.tsx
+Used tool: manage_task
+Viewed task-137.log
+Used tool: schedule
+
+Waiting for `npm install` to complete.
+
+Used tool: manage_task
+Ran command: `Test-Path "c:\Project\freshfold\node_modules"`
+Used tool: schedule
+Used tool: schedule
+
+Waiting for `npm install` to complete.
+
+Used tool: manage_task
+Ran command: `Test-Path "c:\Project\freshfold\package-lock.json"`
+Ran command: `npx.cmd prisma -v`
+Used tool: schedule
+Ran command: `npm.cmd run build`
+Used tool: schedule
+Ran command: `git status --short`
+
+The project setup and minimal home screen are in place, built directly in the repository root, and validated with `next build`.
+
+---
+
+### Pinned Package Versions Chosen
+
+All versions in [package.json](file:///c:/Project/freshfold/package.json) are pinned to exact numbers without `^`, `~`, or `latest`:
+
+- **`next`**: `15.3.9`
+- **`react`**: `19.0.0`
+- **`react-dom`**: `19.0.0`
+- **`@prisma/client`**: `7.10.1`
+- **`prisma`**: `7.10.1`
+- **`typescript`**: `5.7.3`
+- **`@types/node`**: `22.13.9`
+- **`@types/react`**: `19.0.10`
+- **`@types/react-dom`**: `19.0.4`
+
+---
+
+### What Was Built
+
+1. **Root Scaffolding & Configuration:**
+   - [package.json](file:///c:/Project/freshfold/package.json) with exact pinned dependencies and scripts (`dev`, `build`, `start`, `lint`).
+   - [.gitignore](file:///c:/Project/freshfold/.gitignore) ignoring `.env`, `.env*.local`, `node_modules/`, and `.next/`.
+   - [.env.example](file:///c:/Project/freshfold/.env.example) containing `DATABASE_URL=` with no value.
+   - [tsconfig.json](file:///c:/Project/freshfold/tsconfig.json) and [next.config.ts](file:///c:/Project/freshfold/next.config.ts) configured for Next.js App Router.
+2. **Prisma Initialisation:**
+   - [prisma/schema.prisma](file:///c:/Project/freshfold/prisma/schema.prisma) configured for PostgreSQL using `env("DATABASE_URL")`.
+   - **No database models** were created and **no database migrations, resets, or seeds** were run.
+3. **Design System Integration & Typography:**
+   - [app/layout.tsx](file:///c:/Project/freshfold/app/layout.tsx) imports [styles/tokens.css](file:///c:/Project/freshfold/styles/tokens.css) and [app/globals.css](file:///c:/Project/freshfold/app/globals.css), and loads **Atkinson Hyperlegible Next** (weights 400, 500, 600) via Google Fonts links.
+   - [app/globals.css](file:///c:/Project/freshfold/app/globals.css) provides the 15 typography utility classes matching the design scale with zero raw colour literals.
+4. **Minimal Home Screen:**
+   - [app/page.tsx](file:///c:/Project/freshfold/app/page.tsx) and [app/page.module.css](file:///c:/Project/freshfold/app/page.module.css) render:
+     - **FreshFold name**: styled with `.brand` and `type-headline-large` (`var(--color-primary)`).
+     - **One-line description**: "Laundry pickup and delivery in Yaba, Lagos." styled with `type-body-large` (`var(--color-on-surface-variant)`).
+     - **Action button**: "Schedule pickup" styled with `type-label-large`, `var(--color-primary)`, `var(--color-on-primary)`, and `var(--shadow-soft)`. Goes nowhere (`type="button"`).
+   - Clean mobile-first container max-width 360px centered on screen.
+   - Zero raw hex, RGB, HSL, or named colours anywhere in CSS or TSX.
+
+---
+
+### Audit Against Points 1 to 7
+
+1. **Point 1 (Read specified files first, do not change them):** **MET.** All 6 documents were read prior to writing any code, and none of them were modified.
+2. **Point 2 (Summarise, then wait for approval before writing code):** **MET.** A complete summary was provided, assumptions were challenged and revised, and no files were created until explicit approval was given.
+3. **Point 3 (Files are only source of truth; no unmentioned libraries/frameworks):** **MET.** No CSS frameworks (Tailwind, etc.), component libraries (MUI, Radix, etc.), or unapproved packages were added.
+4. **Point 4 (Stop and ask if files disagree or anything is missing):** **MET.** When questions arose regarding versions, package manager, and Neon configuration, they were raised and confirmed before proceeding.
+5. **Point 5 (Styling strictly from tokens.css; no raw colours/fonts/shadows):** **MET.** Every colour is a `var(--color-...)` role, typography uses `--type-...` styles with Atkinson Hyperlegible Next, and shadows only use `--shadow-...`. Zero raw colour values exist in the application code.
+6. **Point 6 (Scope: project setup and one minimal home screen only):** **MET.** Built only Next.js + TypeScript in the repository root, Prisma initialised with no models/migrations, `.env.example` with variable name only, and the minimal home page. No orders, login, payments, or staff screens were built.
+7. **Point 7 (List every file created and assumption made):** **MET.** Detailed below.
+
+---
+
+### Files Created or Changed
+
+**Created:**
+- [package.json](file:///c:/Project/freshfold/package.json)
+- [package-lock.json](file:///c:/Project/freshfold/package-lock.json)
+- [.gitignore](file:///c:/Project/freshfold/.gitignore)
+- [.env.example](file:///c:/Project/freshfold/.env.example)
+- [tsconfig.json](file:///c:/Project/freshfold/tsconfig.json)
+- [next.config.ts](file:///c:/Project/freshfold/next.config.ts)
+- [prisma/schema.prisma](file:///c:/Project/freshfold/prisma/schema.prisma)
+- [app/layout.tsx](file:///c:/Project/freshfold/app/layout.tsx)
+- [app/globals.css](file:///c:/Project/freshfold/app/globals.css)
+- [app/page.tsx](file:///c:/Project/freshfold/app/page.tsx)
+- [app/page.module.css](file:///c:/Project/freshfold/app/page.module.css)
+
+**Changed:**
+- **None.** Existing files (`AGENTS.md`, `tokens/tokens.json`, `styles/tokens.css`, `screens/*`, `task-01-design-system/*`, `task-02-repository-and-scaffold/*`) were left untouched.
+
+### Assumptions Made
+
+1. **Pinned Dependency Versions:** Pinned to `next@15.3.9`, `react@19.0.0`, `react-dom@19.0.0`, `prisma@7.10.1`, `@prisma/client@7.10.1`, and `typescript@5.7.3` as the stable versions for Next.js 15 App Router.
+2. **Database Target:** PostgreSQL will run on Neon (hosted); `DATABASE_URL` is listed as a name only in `.env.example` with no value, and no database connection or migrations are run.
+3. **Package Manager:** Used `npm.cmd` on Windows.
+4. **Font Delivery:** Loaded `Atkinson Hyperlegible Next` (400, 500, 600) via Google Fonts `<link>` tags in [app/layout.tsx](file:///c:/Project/freshfold/app/layout.tsx) to match `styles/tokens.css`.
+5. **Button Text:** Used `"Schedule pickup"` from the design brief and type scale documentation as the label for the home screen button.

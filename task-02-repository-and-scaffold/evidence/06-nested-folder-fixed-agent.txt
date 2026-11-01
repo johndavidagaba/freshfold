@@ -1,0 +1,58 @@
+Task 2, step 5: nested folder, fix 2 (telling the agent to clean up in place)
+Agent: Antigravity, Gemini 3.8 Flash Medium, 26 Oct 2026 17:47-17:52. I approved each command one at a time;
+the delete was allowed once, after checking the path was exactly c:\Project\freshfold\freshfold.
+
+My prompt:
+There is a nested project folder at freshfold/freshfold with its own package.json (I created it to reproduce
+the nested-folder problem). Remove that nested folder only, so the project exists once, in the repository root.
+Do not touch anything else. Then show me the output of "dir" in the root and confirm there is exactly one
+package.json in the project (excluding node_modules).
+
+Agent's reply, copied from the agent panel:
+
+Ran command: Test-Path "c:\Project\freshfold\freshfold"
+Ran command: Get-ChildItem -Path "c:\Project\freshfold\freshfold" -Recurse | Select-Object FullName
+Ran command: Remove-Item -Recurse -Force "c:\Project\freshfold\freshfold"
+Ran command: cmd.exe /c dir
+Ran command: Get-ChildItem -Path "c:\Project\freshfold" -Filter "package.json" -Recurse | Where-Object { $_.FullName -notmatch "node_modules" -and $_.FullName -notmatch "\.next" } | Select-Object FullName
+
+The nested freshfold/freshfold directory has been removed.
+
+Output of dir in the repository root:
+ Directory of C:\Project\freshfold
+26/10/2026  17:50    <DIR>          .
+23/10/2026  19:48    <DIR>          ..
+26/10/2026  16:11                14 .env.example
+26/10/2026  16:11               267 .gitignore
+26/10/2026  17:43    <DIR>          .next
+25/10/2026  15:54             2,953 AGENTS.md
+26/10/2026  17:26    <DIR>          app
+26/10/2026  16:16               216 next-env.d.ts
+26/10/2026  16:12               133 next.config.ts
+26/10/2026  16:27    <DIR>          node_modules
+26/10/2026  16:27            49,445 package-lock.json
+26/10/2026  16:24               489 package.json
+26/10/2026  16:12    <DIR>          prisma
+25/10/2026  15:16    <DIR>          screens
+25/10/2026  14:21    <DIR>          scripts
+25/10/2026  15:16    <DIR>          styles
+25/10/2026  15:36    <DIR>          task-01-design-system
+26/10/2026  16:36    <DIR>          task-02-repository-and-scaffold
+25/10/2026  15:16    <DIR>          tokens
+26/10/2026  16:12               598 tsconfig.json
+               8 File(s)         54,115 bytes
+              12 Dir(s)  108,935,335,936 bytes free
+
+Confirmation: exactly one package.json (excluding node_modules and .next):
+C:\Project\freshfold\package.json
+
+Removed: freshfold/freshfold (and its nested package.json). No other files were created or modified.
+
+---
+What I learned reproducing this (my note):
+My first attempt used an EMPTY nested folder. npm did not fail: it searched upwards, found the outer
+package.json and started a second Next.js server on port 3001, because 3000 was taken
+(05a-nested-empty-folder-surprise.png). That is a quieter failure than an error: two servers running and
+no warning. The real error only appeared once the nested folder had its own package.json (npm init -y):
+npm error Missing script: "dev" (05-nested-folder-error.txt). Fix 1 was cd .. (06-nested-folder-fixed.txt,
+npm run lists dev/build/start/lint from freshfold@0.1.0). Fix 2 was this agent clean-up.

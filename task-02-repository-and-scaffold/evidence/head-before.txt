@@ -1,0 +1,18 @@
+# Page head BEFORE step 10, read in Chrome DevTools Console
+# Command: [...document.head.querySelectorAll('title,meta,link[rel*=icon]')].map(e=>e.outerHTML).join('\n')
+
+## Route: /   (Mon 26 Oct 2026 ~21:00 WAT)
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FreshFold Laundry</title>
+<meta name="description" content="Laundry pickup and delivery in Yaba, Lagos">
+
+# No favicon link, no Open Graph tags, no SEO tags beyond description.
+
+## Route: /schedule   (~21:02 WAT)
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FreshFold Laundry</title>
+<meta name="description" content="Laundry pickup and delivery in Yaba, Lagos">
+
+# Identical to the home page: the title does not change with navigation.

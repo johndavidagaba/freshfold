@@ -1,0 +1,18 @@
+# Checking the agent's claim myself (Wed 28 Oct 2026 ~14:50 WAT)
+PS C:\Project\freshfold> Select-String -Path app\page.tsx, app\schedule\page.tsx -Pattern "type-label-large"
+
+app\page.tsx:28:          className={`${styles.button} type-label-large`}
+app\schedule\page.tsx:84:   <label htmlFor="customerName" className={`${styles.label} type-label-large`}>
+app\schedule\page.tsx:98:   <label htmlFor="phone" className={`${styles.label} type-label-large`}>
+app\schedule\page.tsx:112:  <label htmlFor="address" className={`${styles.label} type-label-large`}>
+app\schedule\page.tsx:126:  <label htmlFor="pickupDate" className={`${styles.label} type-label-large`}>
+app\schedule\page.tsx:139:  <span className={`${styles.label} type-label-large`}>
+
+# Confirmed: among buttons, only the home "Schedule pickup" link uses the class.
+# On /schedule the class is on the five FIELD LABELS, not on the four buttons:
+# the style named for button text went everywhere except the buttons.
+
+# After DeepSeek's fix (~14:53 WAT): two new matches in app\schedule\page.tsx
+app\schedule\page.tsx:152:   ... type-label-large`}     (the window button, rendered three times: Morning / Afternoon / Evening)
+app\schedule\page.tsx:173:   className={`${styles.button} type-label-large`}   (Request pickup)
+# The copied --type-label-large-* declarations were removed from .windowButton, .windowButtonSelected and .button.
