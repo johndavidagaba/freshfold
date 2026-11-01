@@ -10,5 +10,5 @@
 | 6 | **The agent changed the database schema** (phone became optional) in a task I'd told it not to migrate. It reported this honestly and didn't migrate, but it changed a product rule at database level without asking. | Build 2 report | Accepted: needed for anonymising; signup still requires a phone |
 | 7 | **Chrome's Request conditions** wouldn't block the logout fetch, so the "bad network" test couldn't be run as planned. | Tests 09b–09d | Worked around: proved the bug from the server log instead |
 | 8 | **Purge job isn't scheduled.** Deletion only works if someone runs the script. | Design review | Open: must be scheduled before launch |
-| 9 | **Hard gating not built** (evidence 04 missing). | — | Not done: out of time |
+| 9 | **Hard gating has no "resend code".** An unverified user whose code expired is stuck on the verify page. | Evidence 04, branch `feature/hard-gating` | Open: reason the branch isn't merged |
 | 10 | **PickupRequest isn't linked to User,** so account deletion can't find a customer's pickups. | Retention matrix | Open |

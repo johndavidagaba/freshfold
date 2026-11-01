@@ -15,6 +15,7 @@
   - the session row is really deleted (evidence 08).
 - **Two users in one browser:** one cookie means one login, so Tunde's signup replaced Kemi in every tab (evidence 06).
 - **Soft gating:** unverified customers see a banner, not a wall (`docs/gating.md`, evidence 03).
+- **Hard gating tried on a branch** (`feature/hard-gating`, not merged): unverified users are sent to a verify page (evidence 04). It exposed a dead end: no way to request a new code once the old one expires.
 - **Admin area:** an ordinary user is refused (evidence 16).
 - **Change password:** ends every other session (evidence 11).
 - **Delete account:**
@@ -36,7 +37,6 @@
 - **The logout bug.** I asked the agent to build it broken on purpose, then couldn't make Chrome's new Request conditions panel block it. I proved it from the server log instead.
 - **Orphan sessions.** A likely double-click left two live sessions for one user.
 - **Not finished:**
-  - hard gating branch (evidence 04);
   - purge job scheduling;
   - the laundry-owner interview (questions ready, `docs/interview-with-owner.md`);
   - open defects listed in `docs/defects.md`.
