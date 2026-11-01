@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
+import { ChangePasswordForm } from "./change-password-form";
+import { DeleteAccount } from "./delete-account";
 import { LogoutButton } from "./logout-button";
 import styles from "./page.module.css";
 
@@ -32,6 +34,8 @@ export default async function DashboardPage() {
         )}
 
         <LogoutButton />
+        <ChangePasswordForm />
+        <DeleteAccount />
       </section>
     </main>
   );

@@ -89,9 +89,30 @@ export async function destroyCurrentSession(): Promise<void> {
     });
   }
 
+  await clearSessionCookie();
+}
+
+export async function clearSessionCookie(): Promise<void> {
+  const cookieStore = await cookies();
   cookieStore.delete({ name: COOKIE_NAME, path: "/" });
 }
 
 export async function destroyAllSessions(userId: string): Promise<void> {
   await prisma.session.deleteMany({ where: { userId } });
+}
+
+export async function deleteOtherSessions(userId: string): Promise<number> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
+
+  if (!token) return 0;
+
+  const result = await prisma.session.deleteMany({
+    where: {
+      userId,
+      tokenHash: { not: hashToken(token) },
+    },
+  });
+
+  return result.count;
 }

@@ -1,0 +1,15 @@
+# Two sign-ins by the same user, two different session identifiers (Fri 30 Oct 2026 ~21:45 WAT, dev server log)
+# User: kemi.ade@example.com (id cmvv66ska000cv8p4o14f6nqp). Logged in, then logged in again from the login page.
+# The log prints the first 8 characters of the SHA-256 hash of the session token (the token itself is never logged or stored).
+
+ POST /api/login ...
+[session] created bee7a3a2 for cmvv66ska000cv8p4o14f6nqp
+ POST /api/login 200 in 8161ms
+ GET /dashboard 200 in 7246ms
+ GET /account?form=login 200 in 337ms
+[session] created 4cae939f for cmvv66ska000cv8p4o14f6nqp
+ POST /api/login 200 in 6228ms
+ GET /dashboard 200 in 959ms
+
+# bee7a3a2... != 4cae939f...: a fresh token on every sign-in, from crypto.randomBytes(32) (256 bits).
+# The second login also deleted the browser's previous session row before creating the new one.

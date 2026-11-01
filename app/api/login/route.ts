@@ -77,7 +77,14 @@ export async function POST(request: Request) {
     );
   }
 
-  if (user.bannedAt || user.deletionRequestedAt) {
+  if (user.deletionRequestedAt) {
+    return NextResponse.json(
+      { error: INVALID_CREDENTIALS },
+      { status: 401 }
+    );
+  }
+
+  if (user.bannedAt) {
     return NextResponse.json(
       { error: INVALID_CREDENTIALS },
       { status: 403 }

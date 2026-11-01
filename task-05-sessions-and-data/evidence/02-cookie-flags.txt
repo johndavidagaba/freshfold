@@ -1,0 +1,21 @@
+# Session cookie flags (Chrome DevTools > Application > Cookies > http://localhost:3000, Fri 30 Oct 2026 ~21:50 WAT)
+# Token value redacted in the screenshot.
+
+Name:      ff_session
+Domain:    localhost
+Path:      /
+Expires:   2026-11-0... (7 days after login; maxAge 7 days)
+Size:      53
+HttpOnly:  ✓
+Secure:    (not set in development: the dev server is plain http://localhost; set when NODE_ENV=production)
+SameSite:  Lax
+
+# What each flag prevents:
+# HttpOnly: page JavaScript cannot read the cookie (document.cookie), so a cross-site scripting bug cannot steal the token.
+# Secure (production only): the cookie is only sent over HTTPS, so it cannot be read on public Wi-Fi or by anything on the network path.
+# SameSite=Lax: the browser does not send the cookie on cross-site POSTs or background requests from other sites, which blocks most
+#   cross-site request forgery (a hostile page making the user's browser call /api/logout or /api/admin/lock). It is still sent when the
+#   user clicks a normal link to FreshFold, so links from WhatsApp or email still arrive logged in. Strict would break that.
+# Path=/: the cookie is sent to every route that needs it (dashboard, admin, API) and nothing narrower is needed.
+# Max-Age 7 days: the browser forgets it after a week; the server also refuses the session after its own expiresAt.
+# The value is a random 256-bit token; the database stores only its SHA-256, so a database leak does not hand out live sessions.
