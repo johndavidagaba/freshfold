@@ -1,4 +1,9 @@
-# Article draft (for LinkedIn or X)
+# Article
+
+**Published on LinkedIn, Sunday 1 November 2026:** https://www.linkedin.com/pulse/my-logout-button-lied-me-server-log-caught-david-john-p8i0e (evidence 17).
+The published version is longer than the draft below: it adds sections on cookies, two users in one browser, deletion and working with the AI agent, with 4 images from the evidence.
+
+## First draft
 
 **Title:** My logout button lied, and the server log caught it
 

@@ -23,6 +23,7 @@
 - **Migrations by hand:**
   - `task5_user_role_and_deletion`;
   - `task5_phone_optional`, so an anonymised user's phone can be emptied. The agent changed the schema but correctly didn't migrate.
+- **Published article:** [My logout button lied to me, and the server log caught it](https://www.linkedin.com/pulse/my-logout-button-lied-me-server-log-caught-david-john-p8i0e) on LinkedIn (evidence 17).
 
 ## What I decided
 
