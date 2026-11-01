@@ -1,0 +1,55 @@
+# Fixed logout (app/dashboard/logout-button.tsx), Sat 31 Oct 2026 ~19:01 WAT
+# Before: fetch('/api/logout') not awaited, page navigated at once (server log 09e shows
+# GET /account?form=login arriving BEFORE POST /api/logout 200).
+# After: awaits the response, redirects only on res.ok, shows an alert on failure.
+"use client";
+
+import { useState } from "react";
+import styles from "./page.module.css";
+
+const LOGOUT_ERROR =
+  "We couldn't log you out. Check your connection and try again.";
+
+export function LogoutButton() {
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/logout", { method: "POST" });
+
+      if (!res.ok) {
+        setLoggingOut(false);
+        setError(LOGOUT_ERROR);
+        return;
+      }
+
+      window.location.assign("/account?form=login");
+    } catch {
+      setLoggingOut(false);
+      setError(LOGOUT_ERROR);
+    }
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        disabled={loggingOut}
+        className={`${styles.button} type-label-large`}
+        onClick={handleLogout}
+      >
+        {loggingOut ? "Logging out…" : "Log out"}
+      </button>
+
+      {error && (
+        <p className={`${styles.error} type-body-medium`} role="alert">
+          {error}
+        </p>
+      )}
+    </>
+  );
+}

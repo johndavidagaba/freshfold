@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 import { verifyPassword } from "@/lib/password";
 import { prisma } from "@/lib/prisma";
 import { getClientIp, limit } from "@/lib/rateLimit";
+import { createSession, destroyCurrentSession } from "@/lib/session";
 import { loginSchema } from "@/lib/validation";
 
 const WINDOW_MS = 15 * 60 * 1000;
+const INVALID_CREDENTIALS = "Email or password is incorrect.";
 const DUMMY_PASSWORD_HASH =
   "$argon2id$v=19$m=19456,t=2,p=1$/Q7XOOsKyiVr3q+6NEnxNQ$favzEhljVIma8W+UZJTNBawuWyXPctwWlcvwYdJc+F8";
 
@@ -70,10 +72,27 @@ export async function POST(request: Request) {
 
   if (!user || !passwordMatches) {
     return NextResponse.json(
-      { error: "Email or password is incorrect." },
+      { error: INVALID_CREDENTIALS },
       { status: 401 }
     );
   }
+
+  if (user.deletionRequestedAt) {
+    return NextResponse.json(
+      { error: INVALID_CREDENTIALS },
+      { status: 401 }
+    );
+  }
+
+  if (user.bannedAt) {
+    return NextResponse.json(
+      { error: INVALID_CREDENTIALS },
+      { status: 403 }
+    );
+  }
+
+  await destroyCurrentSession();
+  await createSession(user.id, request.headers.get("user-agent"));
 
   return NextResponse.json({
     ok: true,

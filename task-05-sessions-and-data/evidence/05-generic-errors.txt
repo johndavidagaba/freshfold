@@ -1,0 +1,16 @@
+# Login failure messages: real email + wrong password vs an email that does not exist (Fri 30 Oct 2026 ~21:51 WAT)
+
+PS> {"email":"kemi.ade@example.com","password":"wrong-password-123"}  -> POST /api/login
+HTTP/1.1 401 Unauthorized
+content-type: application/json
+{"error":"Email or password is incorrect."}
+
+PS> {"email":"nobody-here@example.com","password":"wrong-password-123"}  -> POST /api/login
+HTTP/1.1 401 Unauthorized
+content-type: application/json
+{"error":"Email or password is incorrect."}
+
+# Same status, same headers, same body. The route also runs Argon2 verify against a fixed dummy hash when the
+# email does not exist, so the response time does not reveal it either (not measured precisely here).
+# Known exception (defect): a BANNED user with the CORRECT password gets 403 with the same message, so the
+# status code tells an attacker the password was right.
