@@ -19,6 +19,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  if (currentUser.emailVerifiedAt === null) {
+    return NextResponse.json(
+      { error: "Verify your email first." },
+      { status: 403 }
+    );
+  }
+
   let body: unknown;
 
   try {

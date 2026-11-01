@@ -17,6 +17,10 @@ export default async function DashboardPage() {
     redirect("/account?form=login");
   }
 
+  if (user.emailVerifiedAt === null) {
+    redirect("/verify-email");
+  }
+
   return (
     <main className={styles.container}>
       <section className={styles.card}>
