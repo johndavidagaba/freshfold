@@ -25,6 +25,7 @@
   - `task5_user_role_and_deletion`;
   - `task5_phone_optional`, so an anonymised user's phone can be emptied. The agent changed the schema but correctly didn't migrate.
 - **Published article:** [My logout button lied to me, and the server log caught it](https://www.linkedin.com/pulse/my-logout-button-lied-me-server-log-caught-david-john-p8i0e) on LinkedIn (evidence 17).
+- **Interview with a laundry business** (WhatsApp, 23 Nov): customers prefer WhatsApp to email, staff see every record, and they once lost a phone full of customer numbers (`docs/interview-with-owner.md`, evidence 18).
 
 ## What I decided
 
@@ -38,7 +39,6 @@
 - **Orphan sessions.** A likely double-click left two live sessions for one user.
 - **Not finished:**
   - purge job scheduling;
-  - the laundry-owner interview (questions ready, `docs/interview-with-owner.md`);
   - open defects listed in `docs/defects.md`.
 
 ## Files
